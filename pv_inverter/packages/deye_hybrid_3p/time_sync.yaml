@@ -1,0 +1,122 @@
+# Copyright 2025 Lewa-Reka <lewareka.yt@gmail.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+substitutions:
+  enable_sync_time: false
+
+time:
+  - platform: homeassistant
+    id: esptime
+    on_time:
+      - cron: "0 15 3,15 * * *"
+        then:
+          - if:
+              condition:
+                lambda: |-
+                  return "${enable_sync_time}" == "True";
+              then:
+                - logger.log: "Syncing inverter time with HomeAssistant"
+                - script.execute: set_inverter_time_script
+              else:
+                - logger.log: "HomeAssistant time sync is disabled"
+
+number:
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "System Time Register 62"
+    id: system_time_register_62
+    register_type: holding
+    address: 62
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "System Time Register 63"
+    id: system_time_register_63
+    register_type: holding
+    address: 63
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "System Time Register 64"
+    id: system_time_register_64
+    register_type: holding
+    address: 64
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    internal: true
+
+button:
+  - platform: template
+    name: "Sync Inverter Time"
+    id: sync_inverter_time
+    icon: mdi:timer-sync
+    entity_category: diagnostic
+    on_press:
+      - script.execute: set_inverter_time_script
+
+script:
+  - id: set_inverter_time_script
+    then:
+      - lambda: |-
+          auto time = id(esptime).now();
+          if (!time.is_valid()) {
+            ESP_LOGE("time_sync", "Invalid time");
+            return;
+          }
+
+          uint8_t year = time.year - 2000;
+          if (year > 255) year = 255;
+
+          uint8_t month = time.month;
+          if (month < 1) month = 1;
+          if (month > 12) month = 12;
+
+          uint8_t day = time.day_of_month;
+          if (day < 1) day = 1;
+          if (day > 31) day = 31;
+
+          uint8_t hour = time.hour;
+          if (hour > 23) hour = 23;
+
+          uint8_t minute = time.minute;
+          if (minute > 59) minute = 59;
+
+          uint8_t second = time.second;
+          if (second > 59) second = 59;
+
+          uint16_t reg62 = ((uint16_t)year << 8) | month;
+
+          uint16_t reg63 = ((uint16_t)day << 8) | hour;
+
+          uint16_t reg64 = ((uint16_t)minute << 8) | second;
+
+          id(system_time_register_62).make_call().set_value(reg62).perform();
+          id(system_time_register_63).make_call().set_value(reg63).perform();
+          id(system_time_register_64).make_call().set_value(reg64).perform();
+
+          ESP_LOGI("time_sync", "Time set: %04d-%02d-%02d %02d:%02d:%02d (reg62=0x%04X, reg63=0x%04X, reg64=0x%04X)",
+                   time.year, time.month, time.day_of_month, time.hour, time.minute, time.second,
+                   reg62, reg63, reg64);
