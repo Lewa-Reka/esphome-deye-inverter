@@ -18,9 +18,9 @@ substitutions:
 esphome:
   name: "${name}"
   friendly_name: "${friendly_name}"
-  comment: "${device_description} by Lewa-Reka https://github.com/Lewa-Reka/esphome-pv-inverter"
+  comment: "${device_description} by Lewa-Reka https://github.com/Lewa-Reka/esphome-deye-inverter"
   project:
-    name: "lewa-reka.esphome-pv-inverter"
+    name: "lewa-reka.esphome-deye-inverter"
     version: "0.8.1"
 
 logger:
@@ -72,9 +72,3 @@ modbus_controller:
     update_interval: ${update_interval}
     command_throttle: 60ms
     offline_skip_updates: 3
-
-
-
-
-
-

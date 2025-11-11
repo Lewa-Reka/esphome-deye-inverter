@@ -1,4 +1,4 @@
-# ESPHome PV Inverter
+# ESPHome Deye Inverter
 
 <!--
 Copyright 2025 Lewa-Reka <lewareka.yt@gmail.com>
@@ -17,11 +17,11 @@ limitations under the License.
 -->
 
 ![Maintenance](https://img.shields.io/maintenance/yes/2025?style=for-the-badge)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/lewa-reka/esphome-pv-inverter/build-ci.yaml?style=for-the-badge)
-![GitHub License](https://img.shields.io/github/license/lewa-reka/esphome-pv-inverter?style=for-the-badge)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/y/lewa-reka/esphome-pv-inverter?style=for-the-badge)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/lewa-reka/esphome-deye-inverter/build-ci.yaml?style=for-the-badge)
+![GitHub License](https://img.shields.io/github/license/lewa-reka/esphome-deye-inverter?style=for-the-badge)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/y/lewa-reka/esphome-deye-inverter?style=for-the-badge)
 
-An ESPHome-based solution for monitoring and controlling photovoltaic inverters via Modbus RTU communication. This project provides comprehensive integration with Home Assistant, enabling real-time monitoring and control of solar power systems.
+An ESPHome-based solution for monitoring and controlling Deye photovoltaic inverters via Modbus RTU communication. This project provides comprehensive integration with Home Assistant, enabling real-time monitoring and control of solar power systems.
 
 Installation & Presentation: https://youtu.be/iJjsA_MzmnE [PL]
 
@@ -68,7 +68,7 @@ To set the baud rate on your Deye inverter:
 
 - **ESP Development Board** (e.g., ESP32-DevKit V1)
 - **RS485 to TTL Converter**
-- **PV Inverter** with Modbus RTU support
+- **Deye Inverter** with Modbus RTU support
 - **Connecting Cables** (for RS485 communication)
 
 ## 🔌 Wiring
@@ -105,7 +105,7 @@ This is the easiest way to get started if you're using Home Assistant.
 #### Step 2: Add New Device
 1. In ESPHome dashboard, click **"+ NEW DEVICE"**
 2. Click **"CONTINUE"** on the welcome screen
-3. Enter a name for your device (e.g., "PV Inverter")
+3. Enter a name for your device (e.g., "Deye Inverter")
 4. Select your **"ESP"** device as device type
 5. Click **"NEXT"** and note down the encryption key (save it safely)
 6. Click **"SKIP"** for now - we'll add the configuration manually
@@ -148,7 +148,7 @@ If you prefer using command line or don't have Home Assistant:
 
 2. **Download Configuration**:
    ```bash
-   wget https://raw.githubusercontent.com/Lewa-Reka/esphome-pv-inverter/main/pv-inverter.yaml
+   wget https://raw.githubusercontent.com/Lewa-Reka/esphome-deye-inverter/main/pv-inverter.yaml
    ```
 
 3. **Create secrets.yaml**:
@@ -307,11 +307,11 @@ The configuration automatically updates packages from this repository every 12 h
 1. In ESPHome dashboard, click "CLEAN BUILD FILES" on your device
 2. Click "INSTALL" to rebuild with latest packages
 
-## 📝 Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Areas where help is needed:
 
-- **New Inverter Support**: Modbus register mappings for other brands
+- **New Inverter Support**: Modbus register mappings
 - **Feature Enhancements**: Additional monitoring capabilities
 - **Documentation**: Translations, setup guides
 - **Testing**: Validation with different hardware configurations
@@ -349,10 +349,6 @@ limitations under the License.
 
 This project uses ESPHome and related components. Please refer to the [NOTICE](NOTICE) file for additional license information.
 
-## 🤝 Contributing
-
-Contributions are welcome! Please ensure all contributed code follows the Apache 2.0 license requirements.
-
 ## 🙏 Acknowledgments
 
 - [Solarman Stick Logger by David Rapan](https://github.com/davidrapan/ha-solarman) and [pilipphenkel](https://github.com/philipphenkel/esphome-config) for inspirations
@@ -362,8 +358,8 @@ Contributions are welcome! Please ensure all contributed code follows the Apache
 
 ## 📞 Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/Lewa-Reka/esphome-pv-inverter/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Lewa-Reka/esphome-pv-inverter/discussions) for questions and community support
+- **GitHub Issues**: [Report bugs or request features](https://github.com/Lewa-Reka/esphome-deye-inverter/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Lewa-Reka/esphome-deye-inverter/discussions) for questions and community support
 - **Home Assistant Community**: [ESPHome section](https://community.home-assistant.io/c/esphome/) for general ESPHome help
 
 ## 🔗 Related Projects
@@ -373,4 +369,4 @@ Contributions are welcome! Please ensure all contributed code follows the Apache
 
 ---
 
-**⚠️ Disclaimer**: This project is not officially affiliated with any pv inverter brand. Use at your own risk and ensure compliance with local electrical codes and regulations. Always consult with a qualified electrician for installation and safety verification. The authors are not responsible for any damage to equipment or injury resulting from the use of this software. 
+**⚠️ Disclaimer**: This project is not officially affiliated with Deye. Use at your own risk and ensure compliance with local electrical codes and regulations. Always consult with a qualified electrician for installation and safety verification. The authors are not responsible for any damage to equipment or injury resulting from the use of this software. 
