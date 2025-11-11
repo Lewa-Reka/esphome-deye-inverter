@@ -189,6 +189,7 @@ If you prefer using command line or don't have Home Assistant:
 | `default_system_work_mode` | System work mode in safe mode | `"Zero Export To Load"` | No | All (1P/3P) |
 | `default_solar_sell` | Solar selling state in safe mode | `"on"` | No | All (1P/3P) |
 | `default_force_off_grid` | Force Off Grid switch state in safe mode | `"off"` | No | 3P only (SG0XLP3, SG0XHP3) |
+| `enable_sync_time` | Enable automatic time synchronization with Home Assistant | `false` | No | 3P only (SG0XLP3, SG0XHP3) |
 
 ### Default Hardware Configuration
 
@@ -214,6 +215,7 @@ This project automatically integrates with Home Assistant through the ESPHome AP
 - **Time-of-Use**: Programmable charging/selling schedules
 - **Power Limits**: Maximum selling and charging power settings
 - **Generator**: Control and monitoring (if connected)
+- **Time Synchronization** (3P only): Automatic and Manual time sync. Button available in Home Assistant
 
 ### Time of Use "All" Entities
 The system includes convenient "All" entities that allow you to control all Time of Use windows simultaneously:

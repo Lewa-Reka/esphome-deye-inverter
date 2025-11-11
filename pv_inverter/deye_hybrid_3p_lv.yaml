@@ -36,6 +36,7 @@ packages:
   inverter: !include packages/deye_hybrid_3p/inverter.yaml
   pv: !include packages/deye_hybrid_3p/pv.yaml
   tou: !include packages/deye_hybrid_3p/tou.yaml
+  time_sync: !include packages/deye_hybrid_3p/time_sync.yaml
 
 script:
   - id: set_safe_modbus_registers
