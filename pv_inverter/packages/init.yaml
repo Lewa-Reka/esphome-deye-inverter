@@ -20,7 +20,7 @@ esphome:
   friendly_name: "${friendly_name}"
   comment: "${device_description} by Lewa-Reka https://github.com/Lewa-Reka/esphome-deye-inverter"
   project:
-    name: "lewa-reka.esphome-deye-inverter"
+    name: "lewa-reka.deye-inverter"
     version: "0.8.1"
 
 logger:
