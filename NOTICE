@@ -1,5 +1,5 @@
 ================================================================================
-ESPHome PV Inverter
+ESPHome Deye Inverter
 Copyright 2025 Lewa-Reka <lewareka.yt@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@ limitations under the License.
 ================================================================================
 
 This project contains configuration files for ESPHome-based monitoring
-and control of photovoltaic inverters via Modbus RTU communication.
+and control of Deye photovoltaic inverters via Modbus RTU communication.
 
-Project Repository: https://github.com/Lewa-Reka/esphome-pv-inverter 
+Project Repository: https://github.com/Lewa-Reka/esphome-deye-inverter 
 
 ================================================================================
 This project is built upon the ESPHome platform.

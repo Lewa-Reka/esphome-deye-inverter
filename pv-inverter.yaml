@@ -31,7 +31,7 @@ substitutions:
 
 packages:
   pv_inverter:
-    url: https://github.com/Lewa-Reka/esphome-pv-inverter
+    url: https://github.com/Lewa-Reka/esphome-deye-inverter
     refresh: 12h
     files:
       ### Use the appropriate file for your inverter, uncomment the one you want to use ###
