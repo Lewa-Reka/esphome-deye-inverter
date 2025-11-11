@@ -484,11 +484,29 @@ switch:
     entity_category: config
     icon: "mdi:generator-stationary"
 
+  - platform: template
+    name: "Asymmetric Phase Feeding"
+    id: switch_asymmetric_phase_feeding
+    icon: "mdi:transmission-tower"
+    optimistic: true
+    restore_mode: DISABLED
+    entity_category: config
+    lambda: "return ((int)id(asymmetric_phase_feeding_raw).state) != 0;"
+    turn_on_action:
+      - number.set:
+          id: asymmetric_phase_feeding_raw
+          value: 1
+    turn_off_action:
+      - number.set:
+          id: asymmetric_phase_feeding_raw
+          value: 0
+
+number:
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
-    name: "Asymmetric Phase Feeding"
+    name: "Asymmetric Phase Feeding Raw"
+    id: asymmetric_phase_feeding_raw
     register_type: holding
     address: 237
-    entity_category: config
-    icon: "mdi:transmission-tower"
+    internal: true
