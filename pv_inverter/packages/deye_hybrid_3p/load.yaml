@@ -16,10 +16,12 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Load L1 Voltage"
+    id: load_l1_voltage
     register_type: holding
     address: 644
     unit_of_measurement: "V"
     device_class: voltage
+    state_class:  ${"measurement" if recordEnergyMeasurments else ""}
     accuracy_decimals: 1
     filters:
       - multiply: 0.1
@@ -29,10 +31,12 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Load L2 Voltage"
+    id: load_l2_voltage
     register_type: holding
     address: 645
     unit_of_measurement: "V"
     device_class: voltage
+    state_class:  ${"measurement" if recordEnergyMeasurments else ""}
     accuracy_decimals: 1
     filters:
       - multiply: 0.1
@@ -42,10 +46,12 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Load L3 Voltage"
+    id: load_l3_voltage
     register_type: holding
     address: 646
     unit_of_measurement: "V"
     device_class: voltage
+    state_class:  ${"measurement" if recordEnergyMeasurments else ""}
     accuracy_decimals: 1
     filters:
       - multiply: 0.1
@@ -55,21 +61,26 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Load L1 Power"
+    id: load_l1_power
     register_type: holding
     address: 650
     unit_of_measurement: "W"
     device_class: power
+    state_class:  ${"measurement" if recordEnergyMeasurments else ""}
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
 
+
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Load L2 Power"
+    id: load_l2_power
     register_type: holding
     address: 651
     unit_of_measurement: "W"
     device_class: power
+    state_class:  ${"measurement" if recordEnergyMeasurments else ""}
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
@@ -77,10 +88,12 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Load L3 Power"
+    id: load_l3_power
     register_type: holding
     address: 652
     unit_of_measurement: "W"
     device_class: power
+    state_class:  ${"measurement" if recordEnergyMeasurments else ""}
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
