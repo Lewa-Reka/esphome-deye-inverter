@@ -87,6 +87,11 @@ script:
             return;
           }
 
+          if (time.year < 2000) {
+            ESP_LOGE("time_sync", "Invalid year (expected >= 2000, got %04d)", time.year);
+            return;
+          }
+
           uint8_t year = time.year - 2000;
           if (year > 255) year = 255;
 
@@ -117,6 +122,6 @@ script:
           id(system_time_register_63).make_call().set_value(reg63).perform();
           id(system_time_register_64).make_call().set_value(reg64).perform();
 
-          ESP_LOGI("time_sync", "Time set: %04d-%02d-%02d %02d:%02d:%02d (reg62=0x%04X, reg63=0x%04X, reg64=0x%04X)",
+          ESP_LOGD("time_sync", "Time set: %04d-%02d-%02d %02d:%02d:%02d (reg62=0x%04X, reg63=0x%04X, reg64=0x%04X)",
                    time.year, time.month, time.day_of_month, time.hour, time.minute, time.second,
                    reg62, reg63, reg64);
