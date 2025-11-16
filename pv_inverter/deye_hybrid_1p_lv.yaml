@@ -4,6 +4,10 @@ substitutions:
   device_description: "Deye Inverter SG0XLP1"
   modbus_controller_id: deye_modbus_controller
   baud_rate: "9600"
+
+  # Additional statistic
+  recordEnergyMeasurments: false #Allow to record Voltage and Power of Load ports
+
   # Safe Mode Default parameters
   default_maximum_battery_charge_current: "130" # Amps
   default_max_sell_power: "6000" # Watts
