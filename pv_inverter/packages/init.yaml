@@ -21,7 +21,7 @@ esphome:
   comment: "${device_description} by Lewa-Reka https://github.com/Lewa-Reka/esphome-deye-inverter"
   project:
     name: "lewa-reka.deye-inverter"
-    version: "0.9.1"
+    version: "0.9.2"
 
 logger:
   level: WARN
