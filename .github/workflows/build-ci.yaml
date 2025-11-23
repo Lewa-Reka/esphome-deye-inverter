@@ -2,11 +2,9 @@ name: Build CI
 
 on:
   pull_request:
-    branches: [main, master, develop]
+    branches: [main]
   push:
-    branches: [main, master, develop]
-  release:
-    types: [published]
+    branches: [main]
   schedule:
     - cron: "0 0 * * *"
 
