@@ -13,7 +13,7 @@ To use these configurations, you must have the **Sunsynk Power Flow Card** insta
 
 > **Note:** These examples are currently ready to use only for **3-phase inverters**. For **1-phase inverters**, you must adapt the configuration to use the entities available in the single-phase Deye integration.
 
-Below are three different dashboard card configurations. Each example serves a different visual preference or setup requirement.
+Below are three different dashboard card configurations. Each example serves a different visual preference.
 
 ### Example 1: Full Style (Modern) - 3-Phase
 
@@ -46,7 +46,6 @@ inverter:
   autarky: power
   auto_scale: true
   three_phase: true
-  priority_load_243: true
 battery:
   show_daily: true
   max_power: 12000
@@ -286,7 +285,6 @@ inverter:
   autarky: power
   auto_scale: true
   three_phase: true
-  priority_load_243: true
 battery:
   show_daily: true
   max_power: 12000
