@@ -25,7 +25,7 @@ An ESPHome-based solution for monitoring and controlling Deye photovoltaic inver
 
 Installation & Presentation: https://youtu.be/iJjsA_MzmnE [PL]
 
-## � Documentation
+## 📚 Documentation
 
 - **[Supported Devices](docs/SUPPORTED_DEVICES.md)**: List of supported inverters and specific configurations.
 - **[Features & Capabilities](docs/FEATURES.md)**: Detailed overview of features, safety mechanisms, and monitoring capabilities.
