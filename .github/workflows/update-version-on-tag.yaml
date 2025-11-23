@@ -66,3 +66,50 @@ jobs:
           git add pv_inverter/packages/init.yaml
           git commit -m "release: update version to ${{ steps.extract_version.outputs.version }}"
           git push origin main
+
+      - name: Update tag to point to new commit
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG_NAME="${{ github.event.release.tag_name }}"
+          else
+            TAG_NAME=${GITHUB_REF#refs/tags/}
+          fi
+
+          echo "Updating tag $TAG_NAME to point to the latest commit"
+          # Delete old tag (both locally and remotely)
+          git tag -d "$TAG_NAME" || true
+          git push origin ":refs/tags/$TAG_NAME" || true
+
+          # Create new tag on current commit
+          git tag "$TAG_NAME"
+          git push origin "$TAG_NAME"
+
+          echo "Tag $TAG_NAME has been updated to point to the latest commit"
+
+      - name: Get current commit SHA
+        if: steps.check_changes.outputs.changed == 'true' && github.event_name == 'release'
+        id: get_commit_sha
+        run: |
+          COMMIT_SHA=$(git rev-parse HEAD)
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "Current commit SHA: $COMMIT_SHA"
+
+      - name: Update release to point to new commit
+        if: steps.check_changes.outputs.changed == 'true' && github.event_name == 'release'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const releaseId = context.payload.release.id;
+            const commitSha = '${{ steps.get_commit_sha.outputs.commit_sha }}';
+
+            console.log(`Updating release ${releaseId} to point to commit ${commitSha}`);
+
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: releaseId,
+              target_commitish: commitSha
+            });
+
+            console.log(`Release ${releaseId} has been updated successfully`);
