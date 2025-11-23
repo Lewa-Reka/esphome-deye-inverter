@@ -5,8 +5,8 @@
 1. **No Communication with Inverter**:
    - Check RS485 wiring (A+/B- connections)
    - Verify Modbus address matches inverter settings
-   - Ensure correct baud rate (19200)
-   - Check modbus_inverter_address in configuration
+   - Ensure correct baud rate (9600 default)
+   - Check `modbus_inverter_address` in configuration
 
 2. **WiFi Connection Issues**:
    - Verify SSID and password in configuration
