@@ -14,6 +14,7 @@
 
 select:
   - platform: modbus_controller
+    id: energy_management_priority
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Energy Management Priority"
@@ -36,6 +37,12 @@ select:
       "Selling First": 0
       "Zero Export To Load": 1
       "Zero Export To CT": 2
+
+binary_sensor:
+  - platform: template
+    name: "Load Priority"
+    lambda: return id(energy_management_priority).current_option() == "Load First";
+    icon: "mdi:priority-high"
 
 switch:
   - platform: modbus_controller
