@@ -1,6 +1,12 @@
 name: Report an issue
 description: Report an issue with ESPHome Deye Inverter integration
 body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📚 Documentation
+
+        Before reporting an issue, please check the project documentation and the [Troubleshooting](@docs/TROUBLESHOOTING.md) section, where you can find solutions to the most common problems.
   - type: textarea
     validations:
       required: true
@@ -61,8 +67,10 @@ body:
     attributes:
       label: Logs
       description: |
-        Include any relevant logs here. Serial or USB logs are much more useful than WiFi logs.
-        If you have a complete log file, please paste it here.
+        Include any relevant logs here. If you have a complete log file, please paste it here.
+
+        To enable verbose logging, see the Debug Mode section in [Troubleshooting](@docs/TROUBLESHOOTING.md).
+        In ESPHome, WiFi logs are fully sufficient for diagnosing issues.
       render: txt
       placeholder: |
         [00:00:00][I][logger:123]: Log message here...
