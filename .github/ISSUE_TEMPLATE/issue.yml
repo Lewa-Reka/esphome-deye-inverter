@@ -1,0 +1,78 @@
+name: Report an issue
+description: Report an issue with ESPHome Deye Inverter integration
+body:
+  - type: textarea
+    validations:
+      required: true
+    id: problem
+    attributes:
+      label: The problem
+      description: >
+        Describe the issue you are experiencing here to communicate to the
+        maintainers. Tell us what you were trying to do and what happened.
+
+        Provide a clear and concise description of what the problem is.
+      placeholder: |
+        Example: When I try to read battery voltage from entity "sensor.deye_battery_voltage", I get incorrect values...
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: >
+        If you have a suggestion on how to fix the issue, please describe it here.
+      placeholder: |
+        Example: I think the issue might be related to...
+  - type: markdown
+    attributes:
+      value: |
+        ## Environment
+  - type: input
+    validations:
+      required: true
+    id: project_version
+    attributes:
+      label: Project version
+      description: >
+        Which version of ESPHome Deye Inverter integration are you using?
+        For example: v0.9.0, latest commit hash, or branch name.
+      placeholder: v0.9.0
+  - type: input
+    id: inverter_model
+    attributes:
+      label: Deye inverter model
+      description: >
+        What is your Deye inverter model?
+        For example: SUN-12K-SG04LP3-EU etc.
+      placeholder: e.g., SUN-12K-SG04LP3-EU
+  - type: input
+    id: inverter_firmware
+    attributes:
+      label: Inverter firmware version
+      description: >
+        What firmware version is installed on your Deye inverter?
+        You can find this information in the inverter's display menu.
+      placeholder: e.g., 1072
+  - type: markdown
+    attributes:
+      value: |
+        ## Details
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        Include any relevant logs here. Serial or USB logs are much more useful than WiFi logs.
+        If you have a complete log file, please paste it here.
+      render: txt
+      placeholder: |
+        [00:00:00][I][logger:123]: Log message here...
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional information
+      description: >
+        If you have any additional information for us, use the field below.
+        Please note, you can attach screenshots or screen recordings here, by
+        dragging and dropping files in the field below.
+      placeholder: |
+        Any other relevant information...
