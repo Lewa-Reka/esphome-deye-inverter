@@ -25,10 +25,11 @@ This configuration uses the `full` card style with a modern inverter look. It fe
 ```yaml
 type: custom:sunsynk-power-flow-card
 cardstyle: full
+wide: false
 large_font: true
 show_battery: true
+show_solar: true
 show_grid: true
-dynamic_line_width: true
 grid_options:
   columns: full
 solar:
@@ -46,6 +47,7 @@ inverter:
   autarky: power
   auto_scale: true
   three_phase: true
+  colour: "#ffffff"
 battery:
   show_daily: true
   max_power: 12000
@@ -143,10 +145,11 @@ This version uses the `compact` card style. It is designed to take up less space
 ```yaml
 type: custom:sunsynk-power-flow-card
 cardstyle: compact
+wide: false
 large_font: true
 show_battery: true
+show_solar: true
 show_grid: true
-dynamic_line_width: true
 grid_options:
   columns: full
 solar:
@@ -165,6 +168,7 @@ inverter:
   auto_scale: true
   three_phase: true
   model: deye
+  colour: "#ffffff"
 battery:
   show_daily: true
   max_power: 12000
@@ -263,10 +267,10 @@ This configuration uses the `full` card style but with the `wide: true` option, 
 type: custom:sunsynk-power-flow-card
 cardstyle: full
 wide: true
-large_font: false
+large_font: true
 show_battery: true
+show_solar: true
 show_grid: true
-dynamic_line_width: true
 grid_options:
   columns: full
 solar:
@@ -285,6 +289,7 @@ inverter:
   autarky: power
   auto_scale: true
   three_phase: true
+  colour: "#ffffff"
 battery:
   show_daily: true
   max_power: 12000
