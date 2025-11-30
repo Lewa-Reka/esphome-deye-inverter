@@ -38,13 +38,16 @@ select:
       "Zero Export To Load": 1
       "Zero Export To CT": 2
 
-binary_sensor:
-  - platform: template
+switch:
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    register_type: holding
     name: "Load Priority"
-    lambda: return id(energy_management_priority).current_option() == "Load First";
+    bitmask: 1
+    address: 141
     icon: "mdi:priority-high"
 
-switch:
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
