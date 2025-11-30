@@ -38,13 +38,20 @@ select:
       "Zero Export To Load": 1
       "Zero Export To CT": 2
 
-binary_sensor:
+switch:
   - platform: template
     name: "Load Priority"
     lambda: return id(energy_management_priority).current_option() == "Load First";
     icon: "mdi:priority-high"
+    turn_on_action:
+      - select.select_option:
+          id: energy_management_priority
+          option: "Load First"
+    turn_off_action:
+      - select.select_option:
+          id: energy_management_priority
+          option: "Battery First"
 
-switch:
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
