@@ -44,11 +44,11 @@ switch:
     lambda: return id(energy_management_priority).current_option() == "Load First";
     icon: "mdi:priority-high"
     turn_on_action:
-      - select.select_option:
+      - select.set:
           id: energy_management_priority
           option: "Load First"
     turn_off_action:
-      - select.select_option:
+      - select.set:
           id: energy_management_priority
           option: "Battery First"
 
