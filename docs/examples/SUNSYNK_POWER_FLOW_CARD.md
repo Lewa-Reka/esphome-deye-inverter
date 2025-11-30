@@ -75,7 +75,7 @@ grid:
   label_daily_grid_buy: Bought Energy
 entities:
   inverter_status_59: sensor.deye_inverter_running_status
-  priority_load_243: binary_sensor.deye_inverter_load_priority
+  priority_load_243: switch.deye_inverter_load_priority
   grid_ct_power_172: sensor.deye_inverter_grid_l1_power
   grid_ct_power_L2: sensor.deye_inverter_grid_l2_power
   grid_ct_power_L3: sensor.deye_inverter_grid_l3_power
@@ -196,7 +196,7 @@ grid:
   label_daily_grid_buy: Bought Energy
 entities:
   inverter_status_59: sensor.deye_inverter_running_status
-  priority_load_243: binary_sensor.deye_inverter_load_priority
+  priority_load_243: switch.deye_inverter_load_priority
   grid_ct_power_172: sensor.deye_inverter_grid_l1_power
   grid_ct_power_L2: sensor.deye_inverter_grid_l2_power
   grid_ct_power_L3: sensor.deye_inverter_grid_l3_power
@@ -327,7 +327,7 @@ grid:
   label_daily_grid_buy: Bought Energy
 entities:
   inverter_status_59: sensor.deye_inverter_running_status
-  priority_load_243: binary_sensor.deye_inverter_load_priority
+  priority_load_243: switch.deye_inverter_load_priority
   grid_ct_power_172: sensor.deye_inverter_grid_l1_power
   grid_ct_power_L2: sensor.deye_inverter_grid_l2_power
   grid_ct_power_L3: sensor.deye_inverter_grid_l3_power
