@@ -101,6 +101,7 @@ sensor:
     address: 633
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:solar-power"
@@ -112,6 +113,7 @@ sensor:
     address: 634
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:solar-power"
@@ -123,6 +125,7 @@ sensor:
     address: 635
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:solar-power"
@@ -135,6 +138,7 @@ sensor:
     address: 636
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:solar-power"

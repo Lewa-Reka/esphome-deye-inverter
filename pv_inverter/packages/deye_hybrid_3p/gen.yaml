@@ -92,6 +92,7 @@ sensor:
     address: 664
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:engine"
@@ -103,6 +104,7 @@ sensor:
     address: 665
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:engine"
@@ -114,6 +116,7 @@ sensor:
     address: 666
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:engine"
@@ -126,6 +129,7 @@ sensor:
     address: 667
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:engine"

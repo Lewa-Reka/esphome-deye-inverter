@@ -132,6 +132,7 @@ sensor:
     address: 590
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:lightning-bolt"
@@ -313,6 +314,7 @@ sensor:
     address: 595
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     disabled_by_default: true

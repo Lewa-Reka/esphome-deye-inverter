@@ -59,6 +59,7 @@ sensor:
     address: 650
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
@@ -70,6 +71,7 @@ sensor:
     address: 651
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
@@ -81,6 +83,7 @@ sensor:
     address: 652
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
@@ -92,6 +95,7 @@ sensor:
     address: 653
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
@@ -146,6 +150,7 @@ sensor:
     address: 640
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
@@ -158,6 +163,7 @@ sensor:
     address: 641
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
@@ -170,6 +176,7 @@ sensor:
     address: 642
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
@@ -182,6 +189,7 @@ sensor:
     address: 643
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
@@ -192,6 +200,7 @@ sensor:
     id: power_losses
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 1
     lambda: |-
       return (
