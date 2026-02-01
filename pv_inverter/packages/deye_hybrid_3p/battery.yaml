@@ -467,6 +467,7 @@ number:
     max_value: 63
     step: 0.01
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -480,6 +481,7 @@ number:
     max_value: 100
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -494,6 +496,7 @@ number:
     max_value: 240
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:current-dc"
 
   - platform: modbus_controller
@@ -510,6 +513,7 @@ number:
     max_value: 63
     step: 0.01
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -523,6 +527,7 @@ number:
     max_value: 100
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -537,6 +542,7 @@ number:
     max_value: 90
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -552,6 +558,7 @@ number:
     max_value: 10
     step: 0.5
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -565,6 +572,7 @@ number:
     max_value: 50
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -578,6 +586,7 @@ number:
     max_value: 6000
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -592,6 +601,7 @@ number:
     max_value: 100
     step: 0.1
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -605,6 +615,7 @@ number:
     max_value: 100
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -618,6 +629,7 @@ number:
     max_value: 100
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -631,6 +643,7 @@ number:
     max_value: 100
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -647,6 +660,7 @@ number:
     max_value: 61
     step: 0.01
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -663,6 +677,7 @@ number:
     max_value: 61
     step: 0.01
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -679,6 +694,7 @@ number:
     max_value: 61
     step: 0.01
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -695,6 +711,7 @@ number:
     max_value: 61
     step: 0.01
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -711,6 +728,7 @@ number:
     max_value: 61
     step: 0.01
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -727,6 +745,7 @@ number:
     max_value: 61
     step: 0.01
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -740,6 +759,7 @@ number:
     max_value: 2000
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -756,6 +776,7 @@ number:
     max_value: 61
     step: 0.01
     entity_category: config
+    mode: box
     icon: "mdi:battery"
 
   - platform: modbus_controller
@@ -780,6 +801,7 @@ number:
     device_class: current
     entity_category: config
     value_type: U_WORD
+    mode: box
     icon: "mdi:battery-charging-10"
 
   - platform: modbus_controller
@@ -791,4 +813,5 @@ number:
     entity_category: config
     device_class: current
     value_type: U_WORD
+    mode: box
     icon: "mdi:battery-charging-50"

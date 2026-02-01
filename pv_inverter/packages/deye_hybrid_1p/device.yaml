@@ -22,7 +22,7 @@ sensor:
     value_type: U_WORD
     icon: "mdi:identifier"
     entity_category: diagnostic
-  
+
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: Device Rated Power
@@ -81,7 +81,7 @@ sensor:
           return (float)phases;
 
 binary_sensor:
-  - platform: modbus_controller       
+  - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Grid Connected Status"
     id: grid_connected_status
@@ -248,6 +248,7 @@ number:
     max_value: 1000
     step: 1
     entity_category: diagnostic
+    mode: box
     icon: "mdi:timer-check"
 
 select:

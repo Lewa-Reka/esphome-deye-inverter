@@ -214,6 +214,7 @@ number:
     max_value: 63
     step: 0.01
     entity_category: config
+    mode: box
     icon: "mdi:lightning-bolt-circle"
 
   - platform: modbus_controller
@@ -227,6 +228,7 @@ number:
     max_value: 100
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:lightning-bolt-circle"
 
   - platform: modbus_controller
@@ -243,6 +245,7 @@ number:
     max_value: 63
     step: 0.01
     entity_category: config
+    mode: box
     icon: "mdi:lightning-bolt-circle"
 
   - platform: modbus_controller
@@ -256,6 +259,7 @@ number:
     max_value: 100
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:lightning-bolt-circle"
 
   - platform: modbus_controller
@@ -271,6 +275,7 @@ number:
     max_value: 24
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:generator-stationary"
 
   - platform: modbus_controller
@@ -286,6 +291,7 @@ number:
     max_value: 24
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:generator-stationary"
 
   - platform: modbus_controller
@@ -300,6 +306,7 @@ number:
     step: 1
     value_type: U_WORD
     entity_category: config
+    mode: box
     disabled_by_default: true
     icon: "mdi:solar-power-variant"
 
@@ -316,4 +323,5 @@ number:
     min_value: 0
     step: 1
     entity_category: config
+    mode: box
     icon: "mdi:generator-stationary"

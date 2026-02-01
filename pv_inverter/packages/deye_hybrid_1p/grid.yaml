@@ -1,4 +1,4 @@
-﻿# Copyright 2025 Lewa-Reka & Harvey Dent
+# Copyright 2025 Lewa-Reka & Harvey Dent
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ globals:
   - id: last_update_time
     type: unsigned long
     restore_value: yes
-    
+
 sensor:
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
@@ -107,7 +107,7 @@ sensor:
     filters:
       - multiply: 0.1
     value_type: U_WORD
-    icon: "mdi:sine-wave" 
+    icon: "mdi:sine-wave"
 
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
@@ -142,19 +142,19 @@ sensor:
   # Axiliary sensor
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
-    id: total_energy_bought_low_bytes 
+    id: total_energy_bought_low_bytes
     address: 78
     register_type: holding
     value_type: U_WORD
-    internal: true 
+    internal: true
 
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
-    id: total_energy_bought_high_bytes 
+    id: total_energy_bought_high_bytes
     address: 80
     register_type: holding
     value_type: U_WORD
-    internal: true 
+    internal: true
 
   # Main sensor + fix
   - platform: template
@@ -184,7 +184,7 @@ sensor:
         return calculated_value;
       }
       return {};
-      
+
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Total Energy Sold"
@@ -306,11 +306,11 @@ switch:
     name: "Generator Grid Side"
     register_type: holding
     address: 280
-    bitmask: 12 
+    bitmask: 12
     entity_category: config
     icon: "mdi:generator-stationary"
 
-number: 
+number:
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
@@ -325,6 +325,7 @@ number:
     step: 1
     address: 287
     value_type: U_WORD
+    mode: box
     icon: "mdi:sine-wave"
 
   - platform: modbus_controller
@@ -341,6 +342,7 @@ number:
     step: 1
     address: 287
     value_type: U_WORD
+    mode: box
     icon: "mdi:sine-wave"
 
   - platform: modbus_controller
@@ -357,6 +359,7 @@ number:
     step: 1
     address: 289
     value_type: U_WORD
+    mode: box
     icon: "mdi:sine-wave"
 
   - platform: modbus_controller
@@ -373,5 +376,5 @@ number:
     step: 1
     address: 290
     value_type: U_WORD
+    mode: box
     icon: "mdi:sine-wave"
-

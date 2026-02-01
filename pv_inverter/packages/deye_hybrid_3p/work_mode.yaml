@@ -1,4 +1,4 @@
-﻿# Copyright 2025 Lewa-Reka <lewareka.yt@gmail.com>
+# Copyright 2025 Lewa-Reka <lewareka.yt@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -79,6 +79,7 @@ number:
     step: 1
     address: 143
     value_type: U_WORD
+    mode: box
     icon: "mdi:cash-multiple"
 
   - platform: modbus_controller
@@ -92,6 +93,7 @@ number:
     step: 1
     address: 340
     value_type: U_WORD
+    mode: box
     icon: "mdi:solar-power"
 
   - platform: modbus_controller
@@ -106,6 +108,7 @@ number:
     min_value: 20
     max_value: 500
     step: 1
+    mode: box
     icon: "mdi:transmission-tower-import"
 
   - platform: modbus_controller
@@ -120,4 +123,5 @@ number:
     value_type: U_WORD
     min_value: 0
     step: 1
+    mode: box
     icon: "mdi:transmission-tower"

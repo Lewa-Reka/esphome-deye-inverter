@@ -717,6 +717,7 @@ number:
     min_value: 0
     max_value: 63
     step: 0.01
+    mode: box
     icon: "mdi:sun-clock"
 
   - platform: modbus_controller
@@ -733,6 +734,7 @@ number:
     min_value: 0
     max_value: 63
     step: 0.01
+    mode: box
     icon: "mdi:sun-clock"
 
   - platform: modbus_controller
@@ -749,6 +751,7 @@ number:
     min_value: 0
     max_value: 63
     step: 0.01
+    mode: box
     icon: "mdi:sun-clock"
 
   - platform: modbus_controller
@@ -765,6 +768,7 @@ number:
     min_value: 0
     max_value: 63
     step: 0.01
+    mode: box
     icon: "mdi:sun-clock"
 
   - platform: modbus_controller
@@ -781,6 +785,7 @@ number:
     min_value: 0
     max_value: 63
     step: 0.01
+    mode: box
     icon: "mdi:sun-clock"
 
   - platform: modbus_controller
@@ -797,6 +802,7 @@ number:
     min_value: 0
     max_value: 63
     step: 0.01
+    mode: box
     icon: "mdi:sun-clock"
 
   - platform: modbus_controller
@@ -808,6 +814,7 @@ number:
     device_class: power
     address: 154
     value_type: U_WORD
+    mode: box
     icon: "mdi:power-plug"
 
   - platform: modbus_controller
@@ -819,6 +826,7 @@ number:
     device_class: power
     address: 155
     value_type: U_WORD
+    mode: box
     icon: "mdi:power-plug"
 
   - platform: modbus_controller
@@ -830,6 +838,7 @@ number:
     device_class: power
     address: 156
     value_type: U_WORD
+    mode: box
     icon: "mdi:power-plug"
 
   - platform: modbus_controller
@@ -841,6 +850,7 @@ number:
     device_class: power
     address: 157
     value_type: U_WORD
+    mode: box
     icon: "mdi:power-plug"
 
   - platform: modbus_controller
@@ -852,6 +862,7 @@ number:
     device_class: power
     address: 158
     value_type: U_WORD
+    mode: box
     icon: "mdi:power-plug"
 
   - platform: modbus_controller
@@ -863,6 +874,7 @@ number:
     device_class: power
     address: 159
     value_type: U_WORD
+    mode: box
     icon: "mdi:power-plug"
 
   - platform: modbus_controller
@@ -876,6 +888,7 @@ number:
     max_value: 100
     step: 1
     value_type: U_WORD
+    mode: box
     icon: "mdi:battery-clock"
 
   - platform: modbus_controller
@@ -889,6 +902,7 @@ number:
     max_value: 100
     step: 1
     value_type: U_WORD
+    mode: box
     icon: "mdi:battery-clock"
 
   - platform: modbus_controller
@@ -902,6 +916,7 @@ number:
     max_value: 100
     step: 1
     value_type: U_WORD
+    mode: box
     icon: "mdi:battery-clock"
 
   - platform: modbus_controller
@@ -915,6 +930,7 @@ number:
     max_value: 100
     step: 1
     value_type: U_WORD
+    mode: box
     icon: "mdi:battery-clock"
 
   - platform: modbus_controller
@@ -928,6 +944,7 @@ number:
     max_value: 100
     step: 1
     value_type: U_WORD
+    mode: box
     icon: "mdi:battery-clock"
 
   - platform: modbus_controller
@@ -941,9 +958,11 @@ number:
     max_value: 100
     step: 1
     value_type: U_WORD
+    mode: box
     icon: "mdi:battery-clock"
 
   - platform: template
+    mode: box
     name: "Time of Use All SoC"
     id: time_of_use_all_soc
     unit_of_measurement: "%"
@@ -977,6 +996,7 @@ number:
           value: !lambda "return x;"
 
   - platform: template
+    mode: box
     name: "Time of Use All Out Power"
     id: time_of_use_all_out_power
     unit_of_measurement: W
@@ -1010,6 +1030,7 @@ number:
           value: !lambda "return x;"
 
   - platform: template
+    mode: box
     name: "Time of Use All Voltage"
     id: time_of_use_all_voltage
     unit_of_measurement: "V"
