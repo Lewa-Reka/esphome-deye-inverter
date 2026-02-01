@@ -1,4 +1,4 @@
-﻿# Copyright 2025 Lewa-Reka <lewareka.yt@gmail.com>
+# Copyright 2025 Lewa-Reka <lewareka.yt@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -661,6 +661,7 @@ text_sensor:
 number:
   - platform: modbus_controller
     use_write_multiple: true
+    mode: box
     modbus_controller_id: ${modbus_controller_id}
     name: "Self Check Time"
     id: self_check_time
