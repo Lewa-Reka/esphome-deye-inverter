@@ -1,4 +1,4 @@
-﻿select:
+select:
   - platform: modbus_controller
     id: energy_management_priority
     use_write_multiple: true
@@ -81,6 +81,7 @@ number:
     step: 1
     address: 245
     value_type: U_WORD
+    mode: box
     icon: "mdi:cash-multiple"
 
   - platform: modbus_controller
@@ -94,6 +95,7 @@ number:
     step: 1
     address: 53
     value_type: U_WORD
+    mode: box
     icon: "mdi:solar-power"
 
   - platform: modbus_controller
@@ -108,6 +110,7 @@ number:
     min_value: 20
     max_value: 500
     step: 1
+    mode: box
     icon: "mdi:transmission-tower-import"
 
   - platform: modbus_controller
@@ -122,6 +125,7 @@ number:
     value_type: U_WORD
     min_value: 0
     step: 1
+    mode: box
     icon: "mdi:generator-stationary"
 
   - platform: modbus_controller
@@ -136,4 +140,5 @@ number:
     value_type: U_WORD
     min_value: 0
     step: 1
+    mode: box
     icon: "mdi:transmission-tower"
