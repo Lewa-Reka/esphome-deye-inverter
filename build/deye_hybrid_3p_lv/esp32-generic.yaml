@@ -1,0 +1,54 @@
+# Copyright 2026 Lewa-Reka <lewareka.yt@gmail.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+substitutions:
+  modbus_inverter_address: "0x01" # Default Modbus address, should be changed to match inverter settings
+
+  # Safe Mode parameters for supported inverters
+  safe_mode_delay: 600s # Time after which transition to safe mode and setting default operating parameters will occur
+  default_maximum_battery_charge_current: "140" # Amps
+  default_max_sell_power: "12000" # Watts. Adjust to your inverter
+  default_system_work_mode: "Zero Export To Load" # "Selling First", "Zero Export To Load", "Zero Export To CT"
+  default_solar_sell: "on" # "on", "off"
+  default_force_off_grid: "off" # "on", "off"
+
+  enable_sync_time: false # true, false - Enable time sync with HomeAssistant (Deye 3P inverters only)
+
+packages:
+  pv_inverter:
+    url: https://github.com/Lewa-Reka/esphome-deye-inverter
+    files: pv_inverter/deye_hybrid_3p_lv.yaml
+
+uart:
+  # Default TX and RX pins, if TTL converter is connected differently, set appropriate pins
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+
+modbus:
+#  flow_control_pin: GPIO4 # Uncomment and set appropriate pin if your TTL converter requires it
+
+logger:
+  level: WARN # VERBOSE / DEBUG / INFO / WARN
+
+esp32:
+  variant: esp32
+  framework:
+    type: esp-idf
+
+wifi:
+  ap:
+
+ota:
+  - platform: esphome
+    id: ota_esphome

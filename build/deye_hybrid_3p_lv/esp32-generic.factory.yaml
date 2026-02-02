@@ -1,0 +1,19 @@
+packages:
+  deye-inverter: !include esp32-generic.yaml
+
+improv_serial:
+
+ota:
+  - platform: http_request
+    id: ota_http_request
+
+update:
+  - platform: http_request
+    id: update_http_request
+    name: Firmware
+    source: https://github.com/Lewa-Reka/esphome-deye-inverter/releases/download/latest/manifest.json
+
+http_request:
+
+dashboard_import:
+  package_import_url: github://Lewa-Reka/esphome-deye-inverter/build/deye_hybrid_3p_lv/esp32-generic.yaml@main
