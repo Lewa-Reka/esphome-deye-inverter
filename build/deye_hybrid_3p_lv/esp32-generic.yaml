@@ -49,6 +49,13 @@ esp32:
 wifi:
   ap:
 
+api:
+  encryption: !remove
+
 ota:
   - platform: esphome
     id: ota_esphome
+
+esphome:
+  min_version: "2025.6.0"
+  name_add_mac_suffix: true
