@@ -321,7 +321,7 @@ number:
     entity_category: config
     register_type: holding
     min_value: 100
-    max_value: 287
+    max_value: 290
     step: 1
     address: 287
     value_type: U_WORD
@@ -338,9 +338,9 @@ number:
     entity_category: config
     register_type: holding
     min_value: 100
-    max_value: 288
+    max_value: 290
     step: 1
-    address: 287
+    address: 288
     value_type: U_WORD
     mode: box
     icon: "mdi:sine-wave"
