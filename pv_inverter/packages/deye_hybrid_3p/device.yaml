@@ -217,7 +217,7 @@ binary_sensor:
 
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
-    name: "Turn Off/On Status"
+    name: "Turn Off On Status"
     register_type: holding
     address: 551
     bitmask: 0x1
