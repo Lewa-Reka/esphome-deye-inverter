@@ -80,8 +80,8 @@ sensor:
     device_class: current
     accuracy_decimals: 1
     filters:
-      - multiply: 0.1
-    value_type: U_WORD
+      - multiply: 0.01
+    value_type: S_WORD
     icon: "mdi:current-ac"
 
   - platform: modbus_controller
@@ -93,8 +93,8 @@ sensor:
     device_class: current
     accuracy_decimals: 1
     filters:
-      - multiply: 0.1
-    value_type: U_WORD
+      - multiply: 0.01
+    value_type: S_WORD
     icon: "mdi:current-ac"
 
   - platform: modbus_controller
