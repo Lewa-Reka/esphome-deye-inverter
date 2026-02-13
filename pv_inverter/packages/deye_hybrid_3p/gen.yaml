@@ -169,37 +169,68 @@ switch:
     entity_category: config
     icon: "mdi:generator-stationary"
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
+  - platform: template
     name: "Microinverter Export Cut-off"
-    register_type: holding
-    address: 178
-    bitmask: 0x0001 # bit 0
-    entity_category: config
+    id: switch_microinverter_export_cutoff
     icon: "mdi:solar-panel"
+    optimistic: true
+    restore_mode: DISABLED
+    entity_category: config
+    lambda: "return ((int)id(gen_config_register_raw).state & 0x0001) != 0;"
+    turn_on_action:
+      - number.set:
+          id: gen_config_register_raw
+          value: !lambda "return ((int)id(gen_config_register_raw).state) | 0x0001;"
+    turn_off_action:
+      - number.set:
+          id: gen_config_register_raw
+          value: !lambda "return ((int)id(gen_config_register_raw).state) & ~0x0001;"
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
+  - platform: template
     name: "Generator Peak Shaving Enable"
-    register_type: holding
-    address: 178
-    bitmask: 0x0004 # bit 2
-    entity_category: config
+    id: switch_generator_peak_shaving
     icon: "mdi:generator-stationary"
+    optimistic: true
+    restore_mode: DISABLED
+    entity_category: config
+    lambda: "return ((int)id(gen_config_register_raw).state & 0x0004) != 0;"
+    turn_on_action:
+      - number.set:
+          id: gen_config_register_raw
+          value: !lambda "return ((int)id(gen_config_register_raw).state) | 0x0004;"
+    turn_off_action:
+      - number.set:
+          id: gen_config_register_raw
+          value: !lambda "return ((int)id(gen_config_register_raw).state) & ~0x0004;"
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
+  - platform: template
     name: "Generator On-Grid Always On"
-    register_type: holding
-    address: 178
-    bitmask: 0x0040 # bit 6
-    entity_category: config
+    id: switch_generator_on_grid_always_on
     icon: "mdi:generator-stationary"
+    optimistic: true
+    restore_mode: DISABLED
+    entity_category: config
+    lambda: "return ((int)id(gen_config_register_raw).state & 0x0040) != 0;"
+    turn_on_action:
+      - number.set:
+          id: gen_config_register_raw
+          value: !lambda "return ((int)id(gen_config_register_raw).state) | 0x0040;"
+    turn_off_action:
+      - number.set:
+          id: gen_config_register_raw
+          value: !lambda "return ((int)id(gen_config_register_raw).state) & ~0x0040;"
 
 number:
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Gen Config Register Raw"
+    id: gen_config_register_raw
+    register_type: holding
+    address: 178
+    value_type: U_WORD
+    internal: true
+
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}

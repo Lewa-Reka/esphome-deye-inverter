@@ -58,15 +58,6 @@ switch:
     bitmask: 1
     icon: "mdi:toggle-switch"
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
-    name: "Grid Peak Shaving Enable"
-    register_type: holding
-    address: 178
-    bitmask: 0x0010 # bit 4
-    icon: "mdi:transmission-tower"
-
 number:
   - platform: modbus_controller
     use_write_multiple: true
@@ -125,3 +116,20 @@ number:
     step: 1
     mode: box
     icon: "mdi:transmission-tower"
+
+  - platform: template
+    name: "Grid Peak Shaving Enable"
+    id: switch_grid_peak_shaving
+    icon: "mdi:transmission-tower"
+    optimistic: true
+    restore_mode: DISABLED
+    entity_category: config
+    lambda: "return ((int)id(gen_config_register_raw).state & 0x0010) != 0;"
+    turn_on_action:
+      - number.set:
+          id: gen_config_register_raw
+          value: !lambda "return ((int)id(gen_config_register_raw).state) | 0x0010;"
+    turn_off_action:
+      - number.set:
+          id: gen_config_register_raw
+          value: !lambda "return ((int)id(gen_config_register_raw).state) & ~0x0010;"
