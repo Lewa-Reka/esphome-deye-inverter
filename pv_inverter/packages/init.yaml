@@ -72,3 +72,63 @@ modbus_controller:
     update_interval: ${update_interval}
     command_throttle: 60ms
     offline_skip_updates: 3
+
+debug:
+  update_interval: 60s
+
+sensor:
+  - platform: wifi_signal
+    name: "ESP WiFi Signal"
+    id: esp_wifi_signal
+    icon: mdi:wifi
+    update_interval: 60s
+    entity_category: diagnostic
+  - platform: uptime
+    name: ESP Uptime
+    id: esp_uptime
+    type: seconds
+    icon: mdi:timer-check
+    update_interval: 60s
+    entity_category: diagnostic
+  - platform: debug
+    free:
+      name: ESP Heap Free
+      id: esp_heap_free
+      icon: mdi:memory
+      entity_category: diagnostic
+    block:
+      name: ESP Heap Max Block
+      id: esp_heap_max_block
+      icon: mdi:memory
+      entity_category: diagnostic
+    loop_time:
+      name: ESP Loop Time
+      id: esp_loop_time
+      icon: mdi:reload
+      entity_category: diagnostic
+    cpu_frequency:
+      name: ESP CPU Frequency
+      id: esp_cpu_frequency
+      icon: mdi:cpu-32-bit
+      unit_of_measurement: "MHz"
+      filters:
+        - multiply: 0.000001
+      entity_category: diagnostic
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: ESP IP Address
+      id: esp_ip_address
+      icon: mdi:ip-network
+      entity_category: diagnostic
+    ssid:
+      name: ESP WiFi SSID
+      id: esp_wifi_ssid
+      icon: mdi:access-point
+      entity_category: diagnostic
+    mac_address:
+      name: ESP Mac Address
+      id: esp_mac_address
+      icon: mdi:expansion-card
+      entity_category: diagnostic
