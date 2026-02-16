@@ -1,7 +1,5 @@
 packages:
-  deye-inverter: !include esp32-generic.yaml
-
-improv_serial:
+  deye-inverter: !include Waveshare-ESP32-S3-RS485-CAN.yaml
 
 ota:
   - platform: http_request
@@ -16,4 +14,5 @@ update:
 http_request:
 
 dashboard_import:
-  package_import_url: github://Lewa-Reka/esphome-deye-inverter/build/deye_hybrid_3p_lv/esp32-generic.yaml@main
+  import_full_config: true
+  package_import_url: github://Lewa-Reka/esphome-deye-inverter/devices/deye_hybrid_3p_lv/Waveshare-ESP32-S3-RS485-CAN.yaml@feature/easy-install

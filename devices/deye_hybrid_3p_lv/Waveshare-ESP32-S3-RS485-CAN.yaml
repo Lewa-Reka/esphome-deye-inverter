@@ -13,6 +13,12 @@
 # limitations under the License.
 
 substitutions:
+  api_key: ""
+  ota_password: ""
+  fallback_password: ""
+  wifi_ssid: ""
+  wifi_password: ""
+
   modbus_inverter_address: "0x01" # Default Modbus address, should be changed to match inverter settings
 
   # Safe Mode parameters for supported inverters
@@ -28,33 +34,37 @@ substitutions:
 packages:
   pv_inverter:
     url: https://github.com/Lewa-Reka/esphome-deye-inverter
+    ref: feature/easy-install
     files: pv_inverter/deye_hybrid_3p_lv.yaml
 
 uart:
-  # Default TX and RX pins, if TTL converter is connected differently, set appropriate pins
   tx_pin: GPIO17
-  rx_pin: GPIO16
+  rx_pin: GPIO18
 
 modbus:
-#  flow_control_pin: GPIO4 # Uncomment and set appropriate pin if your TTL converter requires it
+  flow_control_pin: GPIO21
 
 logger:
   level: WARN # VERBOSE / DEBUG / INFO / WARN
 
 esp32:
-  variant: esp32
+  variant: esp32s3
   framework:
     type: esp-idf
 
 wifi:
+  ssid: !remove
+  password: !remove
   ap:
+    ssid: !remove
+    password: !remove
 
 api:
   encryption: !remove
 
 ota:
-  - platform: esphome
-    id: ota_esphome
+  - id: !extend ota_esphome
+    password: !remove
 
 esphome:
   min_version: "2025.6.0"
