@@ -80,10 +80,16 @@ jobs:
           mv "$NAME"/* output/"$VERSION"/
           rmdir "$NAME" 2>/dev/null || true
 
+      - name: Set unique artifact name
+        id: artifact-name
+        run: |
+          BASENAME=$(basename "${{ matrix.file }}" .factory.yaml)
+          echo "name=$BASENAME" >> $GITHUB_OUTPUT
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.esphome-build.outputs.name }}
+          name: ${{ steps.artifact-name.outputs.name }}
           path: output
 
   upload-to-release:
@@ -110,11 +116,19 @@ jobs:
             else
               src="$dir"
             fi
-            cp "$src/manifest.json" "output/${device}.manifest.json" 2>/dev/null || true
-            for bin in "$src"/*.bin "$src"/*.elf; do
+            for bin in "$src"/*.factory.bin "$src"/*.ota.bin; do
               [ -e "$bin" ] || continue
-              cp "$bin" "output/"
+              case "$bin" in
+                *.factory.bin) cp "$bin" "output/${device}.factory.bin" ;;
+                *.ota.bin)     cp "$bin" "output/${device}.ota.bin" ;;
+              esac
             done
+            if [ -f "$src/manifest.json" ]; then
+              jq --arg device "$device" '
+                (.builds[].parts[]? | .path) |= (if . endswith(".factory.bin") then ($device + ".factory.bin") elif . endswith(".ota.bin") then ($device + ".ota.bin") else . end) |
+                (.builds[].ota.path?) |= ($device + ".ota.bin")
+              ' "$src/manifest.json" > "output/${device}.manifest.json"
+            fi
           done
 
       - name: Upload to GitHub Release
