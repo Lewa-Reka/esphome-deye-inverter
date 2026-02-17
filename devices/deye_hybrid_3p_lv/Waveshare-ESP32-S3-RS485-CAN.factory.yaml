@@ -4,6 +4,10 @@ packages:
 ota:
   - platform: http_request
     id: ota_http_request
+  - id: !extend ota_esphome
+    password: !remove
+
+improv_serial:
 
 update:
   - platform: http_request
@@ -13,6 +17,16 @@ update:
 
 http_request:
 
+wifi:
+  ssid: !remove
+  password: !remove
+  ap:
+    ssid: !remove
+    password: !remove
+
+api:
+  encryption: !remove
+
 dashboard_import:
-  import_full_config: true
+  import_full_config: false
   package_import_url: github://Lewa-Reka/esphome-deye-inverter/devices/deye_hybrid_3p_lv/Waveshare-ESP32-S3-RS485-CAN.yaml@feature/easy-install
