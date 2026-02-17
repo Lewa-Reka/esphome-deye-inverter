@@ -28,5 +28,5 @@ api:
   encryption: !remove
 
 dashboard_import:
-  import_full_config: false
+  import_full_config: true
   package_import_url: github://Lewa-Reka/esphome-deye-inverter/devices/deye_hybrid_3p_lv/Waveshare-ESP32-S3-RS485-CAN.yaml@feature/easy-install
