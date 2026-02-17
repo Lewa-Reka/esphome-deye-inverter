@@ -6,41 +6,193 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ESPHome Deye Inverter - Install firmware</title>
   <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+  <script>
+    (function () {
+      var s = localStorage.getItem('esphome-deye-theme');
+      var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (s === 'dark' || (s !== 'light' && dark)) document.documentElement.setAttribute('data-theme', 'dark');
+      else document.documentElement.setAttribute('data-theme', 'light');
+    })();
+  </script>
   <style>
+    /* Theme: light (default) */
+    :root,
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --accent: #0d9488;
+      --accent-hover: #0f766e;
+      --border: #e2e8f0;
+      --shadow: rgba(15, 23, 42, 0.06);
+    }
+
+    /* Theme: dark (system or manual) */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0f172a;
+        --bg-card: #1e293b;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --accent: #2dd4bf;
+        --accent-hover: #5eead4;
+        --border: #334155;
+        --shadow: rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --bg-card: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #2dd4bf;
+      --accent-hover: #5eead4;
+      --border: #334155;
+      --shadow: rgba(0, 0, 0, 0.3);
+    }
+
     :root {
-      --esp-tools-button-color: #0d9488;
+      --esp-tools-button-color: var(--accent);
       --esp-tools-button-text-color: #fff;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
       max-width: 640px;
       margin: 0 auto;
       padding: 1.5rem;
-      line-height: 1.6;
-      color: #1f2937;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .theme-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .theme-bar span {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-right: 0.25rem;
+    }
+
+    .theme-btn {
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.65rem;
+      font-size: 0.8125rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .theme-btn:hover {
+      background: var(--border);
+    }
+
+    .theme-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
     }
 
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.625rem;
+      font-weight: 700;
       margin-top: 0;
+      letter-spacing: -0.02em;
     }
 
     p {
       margin: 0.75rem 0;
+      color: var(--text);
+    }
+
+    p.secondary {
+      color: var(--text-muted);
     }
 
     label {
       display: block;
       font-weight: 600;
       margin-top: 1rem;
+      font-size: 0.9375rem;
+      color: var(--text);
     }
 
-    select {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.25rem;
-      font-size: 1rem;
+    .label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--text);
+    }
+
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .option-item:hover {
+      border-color: var(--accent);
+      background: var(--bg);
+    }
+
+    .option-item:has(input:checked) {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 14%, var(--bg-card));
+    }
+
+    @supports not (background: color-mix(in srgb, red, red)) {
+      .option-item:has(input:checked) {
+        background: var(--border);
+      }
+    }
+
+    .option-item input {
+      width: 1.125rem;
+      height: 1.125rem;
+      margin: 0;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .option-item .option-label {
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .option-item .option-desc {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
     }
 
     .step {
@@ -52,12 +204,33 @@
     }
 
     a {
-      color: #0d9488;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-top: 1rem;
+      box-shadow: 0 1px 3px var(--shadow);
+      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
   </style>
 </head>
 
 <body>
+  <div class="theme-bar">
+    <button type="button" class="theme-btn" data-theme="system" aria-pressed="false">System</button>
+    <button type="button" class="theme-btn" data-theme="light" aria-pressed="false">Light</button>
+    <button type="button" class="theme-btn" data-theme="dark" aria-pressed="false">Dark</button>
+  </div>
+
   <h1>ESPHome Deye Inverter</h1>
   <p>
     Firmware for monitoring and controlling Deye PV inverters via Modbus RTU, with
@@ -67,39 +240,115 @@
     <a href="https://github.com/Lewa-Reka/esphome-deye-inverter">GitHub repository</a>
   </p>
 
-  <div class="step">
-    <label for="family">1. Inverter family</label>
-    <select id="family">
-      <option value="Deye-SG0xHP3">SG0xHP3 - 3-phase, high voltage</option>
-      <option value="Deye-SG0xLP3">SG0xLP3 - 3-phase, low voltage</option>
-      <option value="Deye-SG0xLP1">SG0xLP1 - 1-phase, low voltage</option>
-    </select>
-  </div>
+  <div class="card">
+    <div class="step">
+      <span class="label">1. Inverter family</span>
+      <div class="option-list" role="radiogroup" aria-label="Inverter family">
+        <label class="option-item">
+          <input type="radio" name="family" value="Deye-SG0xLP3" checked>
+          <span>
+            <span class="option-label">SG0xLP3</span>
+            <span class="option-desc">3-phase, low voltage</span>
+          </span>
+        </label>
+        <label class="option-item">
+          <input type="radio" name="family" value="Deye-SG0xHP3">
+          <span>
+            <span class="option-label">SG0xHP3</span>
+            <span class="option-desc">3-phase, high voltage</span>
+          </span>
+        </label>
+        <label class="option-item">
+          <input type="radio" name="family" value="Deye-SG0xLP1">
+          <span>
+            <span class="option-label">SG0xLP1</span>
+            <span class="option-desc">1-phase, low voltage</span>
+          </span>
+        </label>
+      </div>
+    </div>
 
-  <div class="step">
-    <label for="device">2. Device</label>
-    <select id="device">
-      <option value="Waveshare-ESP32-S3-RS485-CAN">Waveshare ESP32-S3 RS485 CAN</option>
-    </select>
-  </div>
+    <div class="step">
+      <span class="label">2. Device</span>
+      <div class="option-list" role="radiogroup" aria-label="Device">
+        <label class="option-item">
+          <input type="radio" name="device" value="Waveshare-ESP32-S3-RS485-CAN" checked>
+          <span>
+            <span class="option-label">Waveshare ESP32-S3 RS485 CAN</span>
+            <span class="option-desc">ESP32-S3 with RS485 and CAN</span>
+          </span>
+        </label>
+      </div>
+    </div>
 
-  <div class="step install-wrap">
-    <label>3. Install firmware</label>
-    <p>Connect your ESP via USB, then click to install. After flashing, you can configure Wi‑Fi (Improv).</p>
-    <esp-web-install-button id="install-btn"></esp-web-install-button>
+    <div class="step install-wrap">
+      <label>3. Install firmware</label>
+      <p class="secondary">Connect your ESP via USB, then click to install. After flashing, you can configure Wi-Fi
+        (Improv).</p>
+      <esp-web-install-button id="install-btn"></esp-web-install-button>
+    </div>
   </div>
 
   <script>
+    (function () {
+      const STORAGE_KEY = 'esphome-deye-theme';
+      const root = document.documentElement;
+
+      function getSystemDark() {
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+
+      function applyTheme(choice) {
+        if (choice === 'system') {
+          root.removeAttribute('data-theme');
+          root.setAttribute('data-theme', getSystemDark() ? 'dark' : 'light');
+          root.dataset.themeChoice = 'system';
+        } else {
+          root.setAttribute('data-theme', choice);
+          root.dataset.themeChoice = choice;
+        }
+        document.querySelectorAll('.theme-btn').forEach(function (btn) {
+          btn.classList.toggle('active', btn.dataset.theme === (choice === 'system' ? 'system' : choice));
+          btn.setAttribute('aria-pressed', btn.classList.contains('active'));
+        });
+      }
+
+      var saved = localStorage.getItem(STORAGE_KEY) || 'system';
+      applyTheme(saved);
+
+      document.querySelectorAll('.theme-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var choice = this.dataset.theme;
+          localStorage.setItem(STORAGE_KEY, choice);
+          applyTheme(choice);
+        });
+      });
+
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+          if ((localStorage.getItem(STORAGE_KEY) || 'system') === 'system') {
+            applyTheme('system');
+          }
+        });
+      }
+    })();
+
     const base = window.location.origin + window.location.pathname.replace(/\/?index\.html$/, '') + '/firmware';
-    const familySelect = document.getElementById('family');
     const installBtn = document.getElementById('install-btn');
 
+    function getFamily() {
+      var r = document.querySelector('input[name="family"]:checked');
+      return r ? r.value : 'Deye-SG0xLP3';
+    }
+
     function updateManifest() {
-      const variant = familySelect.value;
+      var variant = getFamily();
       installBtn.manifest = base + '/' + variant + '/manifest.json';
     }
 
-    familySelect.addEventListener('change', updateManifest);
+    document.querySelectorAll('input[name="family"]').forEach(function (radio) {
+      radio.addEventListener('change', updateManifest);
+    });
     updateManifest();
   </script>
 </body>
