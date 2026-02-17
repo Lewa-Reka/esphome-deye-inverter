@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESPHome Deye Inverter - Install firmware</title>
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+  <style>
+    :root {
+      --esp-tools-button-color: #0d9488;
+      --esp-tools-button-text-color: #fff;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      line-height: 1.6;
+      color: #1f2937;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-top: 0;
+    }
+
+    p {
+      margin: 0.75rem 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      font-size: 1rem;
+    }
+
+    .step {
+      margin-top: 1.5rem;
+    }
+
+    .install-wrap {
+      margin-top: 1.5rem;
+    }
+
+    a {
+      color: #0d9488;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>ESPHome Deye Inverter</h1>
+  <p>
+    Firmware for monitoring and controlling Deye PV inverters via Modbus RTU, with
+    <a href="https://www.home-assistant.io/">Home Assistant</a> integration.
+  </p>
+  <p>
+    <a href="https://github.com/Lewa-Reka/esphome-deye-inverter">GitHub repository</a>
+  </p>
+
+  <div class="step">
+    <label for="family">1. Inverter family</label>
+    <select id="family">
+      <option value="Deye-SG0xHP3">SG0xHP3 - 3-phase, high voltage</option>
+      <option value="Deye-SG0xLP3">SG0xLP3 - 3-phase, low voltage</option>
+      <option value="Deye-SG0xLP1">SG0xLP1 - 1-phase, low voltage</option>
+    </select>
+  </div>
+
+  <div class="step">
+    <label for="device">2. Device</label>
+    <select id="device">
+      <option value="Waveshare-ESP32-S3-RS485-CAN">Waveshare ESP32-S3 RS485 CAN</option>
+    </select>
+  </div>
+
+  <div class="step install-wrap">
+    <label>3. Install firmware</label>
+    <p>Connect your ESP via USB, then click to install. After flashing, you can configure Wi‑Fi (Improv).</p>
+    <esp-web-install-button id="install-btn"></esp-web-install-button>
+  </div>
+
+  <script>
+    const base = window.location.origin + window.location.pathname.replace(/\/?index\.html$/, '') + '/firmware';
+    const familySelect = document.getElementById('family');
+    const installBtn = document.getElementById('install-btn');
+
+    function updateManifest() {
+      const variant = familySelect.value;
+      installBtn.manifest = base + '/' + variant + '/manifest.json';
+    }
+
+    familySelect.addEventListener('change', updateManifest);
+    updateManifest();
+  </script>
+</body>
+
+</html>

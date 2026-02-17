@@ -1,0 +1,175 @@
+name: Build and Publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      files: ${{ steps.find.outputs.files }}
+      version: ${{ steps.version.outputs.version }}
+      ref: ${{ steps.ref.outputs.ref }}
+    steps:
+      - name: Set ref and version
+        id: ref
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "ref=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "ref=${{ github.ref }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.ref.outputs.ref }}
+          fetch-depth: 0
+
+      - name: Generate version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=dev-$(date +'%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Find factory YAML files
+        id: find
+        run: |
+          FILES_JSON=$(find devices -name '*.factory.yaml' | sort | jq -Rnc '[inputs]')
+          echo "files=$FILES_JSON" >> $GITHUB_OUTPUT
+
+  build:
+    name: ${{ matrix.file }}
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        file: ${{ fromJson(needs.prepare.outputs.files) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.ref }}
+
+      - name: Build firmware
+        id: esphome-build
+        uses: esphome/build-action@v7
+        with:
+          yaml-file: ${{ matrix.file }}
+          version: stable
+          complete-manifest: true
+          release-summary: ${{ github.event_name == 'release' && github.event.release.body || '' }}
+          release-url: ${{ github.event_name == 'release' && github.event.release.html_url || '' }}
+
+      - name: Prepare output for upload
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          NAME="${{ steps.esphome-build.outputs.name }}"
+          mkdir -p output/"$VERSION"
+          mv "$NAME"/* output/"$VERSION"/
+          rmdir "$NAME" 2>/dev/null || true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.esphome-build.outputs.name }}
+          path: output
+
+  upload-to-release:
+    name: Upload to Release
+    if: github.event_name == 'release'
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: files
+
+      - name: Copy to flat output for release
+        run: |
+          mkdir -p output
+          VERSION="${{ needs.prepare.outputs.version }}"
+          for dir in files/*/; do
+            device=$(basename "$dir")
+            if [ -d "$dir/$VERSION" ]; then
+              src="$dir/$VERSION"
+            else
+              src="$dir"
+            fi
+            cp "$src/manifest.json" "output/${device}.manifest.json" 2>/dev/null || true
+            for bin in "$src"/*.bin "$src"/*.elf; do
+              [ -e "$bin" ] || continue
+              cp "$bin" "output/"
+            done
+          done
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: output/*
+          tag_name: ${{ needs.prepare.outputs.version }}
+
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout (for static site)
+        uses: actions/checkout@v4
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare firmware directories for Pages
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          BASE="docs/firmware"
+          mkdir -p "$BASE"
+          for dir in artifacts/*/; do
+            device=$(basename "$dir")
+            if [ -d "$dir/$VERSION" ]; then
+              src="$dir/$VERSION"
+            else
+              src="$dir"
+            fi
+            # Use short variant name for URL: Deye-SG0xHP3-ESP32-S3 -> Deye-SG0xHP3
+            variant="${device%-ESP32-S3}"
+            [ "$variant" = "$device" ] && variant="$device"
+            mkdir -p "$BASE/$variant"
+            cp "$src/manifest.json" "$BASE/$variant/" 2>/dev/null || true
+            for f in "$src"/*.bin "$src"/*.elf; do
+              [ -e "$f" ] && cp "$f" "$BASE/$variant/"
+            done
+          done
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
