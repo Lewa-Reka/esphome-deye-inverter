@@ -33,8 +33,8 @@ substitutions:
 packages:
   pv_inverter:
     url: https://github.com/Lewa-Reka/esphome-deye-inverter
-    ref: feature/easy-install
-    files: pv_inverter/deye_hybrid_1p_lv.yaml
+    ref: main
+    files: pv_inverter/deye_hybrid_3p_lv.yaml
 
 esphome:
   min_version: "2025.6.0"

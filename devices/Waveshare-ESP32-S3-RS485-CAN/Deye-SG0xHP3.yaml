@@ -23,18 +23,17 @@ substitutions:
 
   # Safe Mode parameters for supported inverters
   safe_mode_delay: 600s # Time after which transition to safe mode and setting default operating parameters will occur
-  default_maximum_battery_charge_current: "140" # Amps
-  default_max_sell_power: "12000" # Watts. Adjust to your inverter
+  default_maximum_battery_charge_current: "130" # Amps
+  default_max_sell_power: "6000" # Watts. Adjust to your inverter
   default_system_work_mode: "Zero Export To Load" # "Selling First", "Zero Export To Load", "Zero Export To CT"
   default_solar_sell: "on" # "on", "off"
-  default_force_off_grid: "off" # "on", "off"
 
   enable_sync_time: false # true, false - Enable time sync with HomeAssistant (Deye 3P inverters only)
 
 packages:
   pv_inverter:
     url: https://github.com/Lewa-Reka/esphome-deye-inverter
-    ref: feature/easy-install
+    ref: main
     files: pv_inverter/deye_hybrid_3p_hv.yaml
 
 esphome:
