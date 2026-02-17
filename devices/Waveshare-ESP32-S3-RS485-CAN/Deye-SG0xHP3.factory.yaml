@@ -1,5 +1,5 @@
 packages:
-  deye-inverter: !include deye-hybrid-3p-hv.yaml
+  deye-inverter: !include Deye-SG0xHP3.yaml
 
 ota:
   - platform: http_request
@@ -13,7 +13,7 @@ update:
   - platform: http_request
     id: update_http_request
     name: Firmware Update
-    source: https://github.com/Lewa-Reka/esphome-deye-inverter/releases/download/latest/manifest.json
+    source: https://lewa-reka.github.io/esphome-deye-inverter/firmware/Deye-SG0xHP3/manifest.json
 
 http_request:
 
