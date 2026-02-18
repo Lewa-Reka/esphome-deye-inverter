@@ -157,7 +157,7 @@ jobs:
       - name: Prepare firmware directories for Pages
         run: |
           VERSION="${{ needs.prepare.outputs.version }}"
-          BASE="docs/firmware"
+          BASE=".github/pages/firmware"
           mkdir -p "$BASE"
           for dir in artifacts/*/; do
             device=$(basename "$dir")
@@ -182,7 +182,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: .github/pages
 
       - name: Deploy to GitHub Pages
         id: deploy
