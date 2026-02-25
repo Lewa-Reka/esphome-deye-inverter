@@ -38,11 +38,13 @@ packages:
     files: pv_inverter/deye_hybrid_3p_lv.yaml
 
 esphome:
+  name: deye-inverter-test
+  friendly_name: Deye Inverter Test
   min_version: "2025.6.0"
   name_add_mac_suffix: true
-  project:
-    name: "lewa-reka.deye-inverter"
-    version: "0.12.0"
+  # project:
+  #   name: "lewa-reka.deye-inverter"
+  #   version: "0.12.0"
 
 uart:
   tx_pin: GPIO17
