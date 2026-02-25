@@ -18,44 +18,48 @@
     /* Theme: light (default) */
     :root,
     [data-theme="light"] {
-      --bg: #f8fafc;
+      --bg: #f1f5f9;
       --bg-card: #ffffff;
-      --text: #1e293b;
-      --text-muted: #64748b;
+      --text: #0f172a;
+      --text-muted: #475569;
       --accent: #0d9488;
       --accent-hover: #0f766e;
-      --border: #e2e8f0;
-      --shadow: rgba(15, 23, 42, 0.06);
+      --accent-subtle: rgba(13, 148, 136, 0.10);
+      --border: #cbd5e1;
+      --shadow: rgba(15, 23, 42, 0.08);
     }
 
     /* Theme: dark (system or manual) */
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
-        --bg: #0f172a;
-        --bg-card: #1e293b;
+        --bg: #0c1222;
+        --bg-card: #1a2640;
         --text: #f1f5f9;
-        --text-muted: #94a3b8;
+        --text-muted: #a8bdd4;
         --accent: #2dd4bf;
         --accent-hover: #5eead4;
-        --border: #334155;
-        --shadow: rgba(0, 0, 0, 0.3);
+        --accent-subtle: rgba(45, 212, 191, 0.12);
+        --border: #3b5178;
+        --shadow: rgba(0, 0, 0, 0.4);
       }
     }
 
     [data-theme="dark"] {
-      --bg: #0f172a;
-      --bg-card: #1e293b;
+      --bg: #0c1222;
+      --bg-card: #1a2640;
       --text: #f1f5f9;
-      --text-muted: #94a3b8;
+      --text-muted: #a8bdd4;
       --accent: #2dd4bf;
       --accent-hover: #5eead4;
-      --border: #334155;
-      --shadow: rgba(0, 0, 0, 0.3);
+      --accent-subtle: rgba(45, 212, 191, 0.12);
+      --border: #3b5178;
+      --shadow: rgba(0, 0, 0, 0.4);
     }
 
     :root {
       --esp-tools-button-color: var(--accent);
       --esp-tools-button-text-color: #fff;
+      --esp-tools-button-border-radius: 10px;
     }
 
     * {
@@ -64,7 +68,7 @@
 
     body {
       font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
-      max-width: 640px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 1.5rem;
       line-height: 1.65;
@@ -199,6 +203,24 @@
       margin-top: 1.5rem;
     }
 
+    .steps-row {
+      display: flex;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .steps-row>.card {
+      flex: 1;
+      min-width: 0;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .steps-row {
+        flex-direction: column;
+      }
+    }
+
     .install-wrap {
       margin-top: 1.5rem;
     }
@@ -218,15 +240,48 @@
       border-radius: 12px;
       padding: 1.25rem 1.5rem;
       margin-top: 1rem;
-      box-shadow: 0 1px 3px var(--shadow);
+      box-shadow: 0 2px 6px var(--shadow);
       transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .install-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+      box-shadow: 0 2px 8px rgba(13, 148, 136, 0.3);
+      margin-top: 0.5rem;
+    }
+
+    .install-btn:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .install-btn:active {
+      transform: translateY(0);
+    }
+
+    .install-btn svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      fill: currentColor;
     }
   </style>
 </head>
 
 <body>
   <div class="theme-bar">
-    <button type="button" class="theme-btn" data-theme="system" aria-pressed="false">System</button>
+    <button type="button" class="theme-btn" data-theme="system" aria-pressed="false">Auto</button>
     <button type="button" class="theme-btn" data-theme="light" aria-pressed="false">Light</button>
     <button type="button" class="theme-btn" data-theme="dark" aria-pressed="false">Dark</button>
   </div>
@@ -240,9 +295,21 @@
     <a href="https://github.com/Lewa-Reka/esphome-deye-inverter">GitHub repository</a>
   </p>
 
-  <div class="card">
-    <div class="step">
-      <span class="label">1. Inverter family</span>
+  <div class="steps-row">
+    <div class="card">
+      <span class="label">1. Device</span>
+      <div class="option-list" role="radiogroup" aria-label="Device">
+        <label class="option-item">
+          <input type="radio" name="device" value="Waveshare-ESP32-S3-RS485-CAN" checked>
+          <span>
+            <span class="option-label">Waveshare ESP32-S3 RS485 CAN</span>
+            <span class="option-desc">ESP32-S3 with RS485 and CAN</span>
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="card">
+      <span class="label">2. Inverter family</span>
       <div class="option-list" role="radiogroup" aria-label="Inverter family">
         <label class="option-item">
           <input type="radio" name="family" value="Deye-SG0xLP3" checked>
@@ -267,26 +334,20 @@
         </label>
       </div>
     </div>
+  </div>
 
-    <div class="step">
-      <span class="label">2. Device</span>
-      <div class="option-list" role="radiogroup" aria-label="Device">
-        <label class="option-item">
-          <input type="radio" name="device" value="Waveshare-ESP32-S3-RS485-CAN" checked>
-          <span>
-            <span class="option-label">Waveshare ESP32-S3 RS485 CAN</span>
-            <span class="option-desc">ESP32-S3 with RS485 and CAN</span>
-          </span>
-        </label>
-      </div>
-    </div>
-
-    <div class="step install-wrap">
-      <label>3. Install firmware</label>
-      <p class="secondary">Connect your ESP via USB, then click to install. After flashing, you can configure Wi-Fi
-        (Improv).</p>
-      <esp-web-install-button id="install-btn"></esp-web-install-button>
-    </div>
+  <div class="card">
+    <span class="label">3. Install firmware</span>
+    <p class="secondary">Connect your ESP via USB, then click to install. After flashing, you can configure Wi-Fi
+      (Improv).</p>
+    <esp-web-install-button id="install-btn">
+      <button slot="activate" class="install-btn">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 5v6h1.17L12 13.17 9.83 11H11V5h2m2-2H9v6H5l7 7 7-7h-4V3zm4 15H5v2h14v-2z" />
+        </svg>
+        Connect &amp; Install
+      </button>
+    </esp-web-install-button>
   </div>
 
   <script>
