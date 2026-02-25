@@ -13,7 +13,7 @@ update:
   - platform: http_request
     id: update_http_request
     name: Firmware Update
-    source: https://lewa-reka.github.io/esphome-deye-inverter/firmware/Deye-SG0xHP3/manifest.json
+    source: https://lewa-reka.github.io/esphome-deye-inverter/firmware/Waveshare-ESP32-S3-RS485-CAN/Deye-SG0xHP3/manifest.json
 
 http_request:
 
