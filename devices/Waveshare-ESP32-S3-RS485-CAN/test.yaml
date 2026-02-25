@@ -14,6 +14,12 @@ esp32:
 
 api:
 
+packages:
+  pv_inverter:
+    url: https://github.com/Lewa-Reka/esphome-deye-inverter
+    ref: main
+    files: pv_inverter/deye_hybrid_3p_lv.yaml
+
 uart:
   tx_pin: GPIO17
   rx_pin: GPIO18
