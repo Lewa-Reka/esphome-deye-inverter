@@ -14,7 +14,7 @@
 
 substitutions:
   api_key: ""
-  ota_password: " "
+  ota_password: ""
   fallback_password: ""
   wifi_ssid: ""
   wifi_password: ""
@@ -35,6 +35,8 @@ packages:
     files: pv_inverter/deye_hybrid_1p_lv.yaml
 
 esphome:
+  name: deye-inverter
+  friendly_name: Deye Inverter
   min_version: "2025.6.0"
   name_add_mac_suffix: true
 
