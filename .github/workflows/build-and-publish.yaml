@@ -76,15 +76,23 @@ jobs:
         run: |
           VERSION="${{ needs.prepare.outputs.version }}"
           NAME="${{ steps.esphome-build.outputs.name }}"
+          FILE="${{ matrix.file }}"
+          # Extract board (parent dir) and family (filename without .factory.yaml)
+          BOARD=$(echo "$FILE" | cut -d'/' -f2)
+          FAMILY=$(basename "$FILE" .factory.yaml)
           mkdir -p output/"$VERSION"
           mv "$NAME"/* output/"$VERSION"/
           rmdir "$NAME" 2>/dev/null || true
+          # Write metadata for downstream jobs
+          echo "{\"board\":\"$BOARD\",\"family\":\"$FAMILY\"}" > output/_meta.json
 
       - name: Set unique artifact name
         id: artifact-name
         run: |
-          BASENAME=$(basename "${{ matrix.file }}" .factory.yaml)
-          echo "name=$BASENAME" >> $GITHUB_OUTPUT
+          FILE="${{ matrix.file }}"
+          BOARD=$(echo "$FILE" | cut -d'/' -f2)
+          FAMILY=$(basename "$FILE" .factory.yaml)
+          echo "name=${FAMILY}-${BOARD}" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -110,7 +118,10 @@ jobs:
           mkdir -p output
           VERSION="${{ needs.prepare.outputs.version }}"
           for dir in files/*/; do
-            device=$(basename "$dir")
+            [ -f "$dir/_meta.json" ] || continue
+            BOARD=$(jq -r '.board' "$dir/_meta.json")
+            FAMILY=$(jq -r '.family' "$dir/_meta.json")
+            PREFIX="${FAMILY}-${BOARD}"
             if [ -d "$dir/$VERSION" ]; then
               src="$dir/$VERSION"
             else
@@ -119,15 +130,15 @@ jobs:
             for bin in "$src"/*.factory.bin "$src"/*.ota.bin; do
               [ -e "$bin" ] || continue
               case "$bin" in
-                *.factory.bin) cp "$bin" "output/${device}.factory.bin" ;;
-                *.ota.bin)     cp "$bin" "output/${device}.ota.bin" ;;
+                *.factory.bin) cp "$bin" "output/${PREFIX}.factory.bin" ;;
+                *.ota.bin)     cp "$bin" "output/${PREFIX}.ota.bin" ;;
               esac
             done
             if [ -f "$src/manifest.json" ]; then
-              jq --arg device "$device" '
-                (.builds[].parts[]? | .path) |= (if . endswith(".factory.bin") then ($device + ".factory.bin") elif . endswith(".ota.bin") then ($device + ".ota.bin") else . end) |
-                (.builds[].ota.path?) |= ($device + ".ota.bin")
-              ' "$src/manifest.json" > "output/${device}.manifest.json"
+              jq --arg prefix "$PREFIX" '
+                (.builds[].parts[]? | .path) |= (if . endswith(".factory.bin") then ($prefix + ".factory.bin") elif . endswith(".ota.bin") then ($prefix + ".ota.bin") else . end) |
+                (.builds[].ota.path?) |= ($prefix + ".ota.bin")
+              ' "$src/manifest.json" > "output/${PREFIX}.manifest.json"
             fi
           done
 
@@ -160,19 +171,19 @@ jobs:
           BASE=".github/pages/firmware"
           mkdir -p "$BASE"
           for dir in artifacts/*/; do
-            device=$(basename "$dir")
+            [ -f "$dir/_meta.json" ] || continue
+            BOARD=$(jq -r '.board' "$dir/_meta.json")
+            FAMILY=$(jq -r '.family' "$dir/_meta.json")
             if [ -d "$dir/$VERSION" ]; then
               src="$dir/$VERSION"
             else
               src="$dir"
             fi
-            # Use short variant name for URL: Deye-SG0xHP3-ESP32-S3 -> Deye-SG0xHP3
-            variant="${device%-ESP32-S3}"
-            [ "$variant" = "$device" ] && variant="$device"
-            mkdir -p "$BASE/$variant"
-            cp "$src/manifest.json" "$BASE/$variant/" 2>/dev/null || true
+            DEST="$BASE/$BOARD/$FAMILY"
+            mkdir -p "$DEST"
+            cp "$src/manifest.json" "$DEST/" 2>/dev/null || true
             for f in "$src"/*.bin "$src"/*.elf; do
-              [ -e "$f" ] && cp "$f" "$BASE/$variant/"
+              [ -e "$f" ] && cp "$f" "$DEST/"
             done
           done
 

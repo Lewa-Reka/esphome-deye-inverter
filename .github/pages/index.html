@@ -402,12 +402,21 @@
       return r ? r.value : 'Deye-SG0xLP3';
     }
 
+    function getBoard() {
+      var r = document.querySelector('input[name="device"]:checked');
+      return r ? r.value : 'Waveshare-ESP32-S3-RS485-CAN';
+    }
+
     function updateManifest() {
-      var variant = getFamily();
-      installBtn.manifest = base + '/' + variant + '/manifest.json';
+      var board = getBoard();
+      var family = getFamily();
+      installBtn.manifest = base + '/' + board + '/' + family + '/manifest.json';
     }
 
     document.querySelectorAll('input[name="family"]').forEach(function (radio) {
+      radio.addEventListener('change', updateManifest);
+    });
+    document.querySelectorAll('input[name="device"]').forEach(function (radio) {
       radio.addEventListener('change', updateManifest);
     });
     updateManifest();
