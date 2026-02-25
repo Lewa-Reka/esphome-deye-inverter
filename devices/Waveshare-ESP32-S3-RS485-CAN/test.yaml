@@ -40,6 +40,9 @@ packages:
 esphome:
   min_version: "2025.6.0"
   name_add_mac_suffix: true
+  project:
+    name: "lewa-reka.deye-inverter"
+    version: "0.12.0"
 
 uart:
   tx_pin: GPIO17
