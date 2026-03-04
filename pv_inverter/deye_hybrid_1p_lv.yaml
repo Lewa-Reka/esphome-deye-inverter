@@ -12,6 +12,7 @@ substitutions:
 
 packages:
   init: !include packages/init.yaml
+  safe_mode_params: !include shared/safe_mode_params.yaml
   battery: !include packages/deye_hybrid_1p/battery.yaml
   gen: !include packages/deye_hybrid_1p/gen.yaml
   grid: !include packages/deye_hybrid_1p/grid.yaml
@@ -30,12 +31,12 @@ script:
           format: "Setting safe Modbus register values"
       - number.set:
           id: maximum_battery_charge_current
-          value: ${default_maximum_battery_charge_current}
+          value: !lambda "return id(safe_mode_max_battery_charge_current).state;"
       - number.set:
           id: max_sell_power
-          value: ${default_max_sell_power}
+          value: !lambda "return id(safe_mode_max_sell_power).state;"
       - select.set:
           id: system_work_mode
-          option: ${default_system_work_mode}
+          option: !lambda "return id(safe_mode_system_work_mode).state;"
       - switch.turn_${default_solar_sell}:
           id: switch_solar_sell
