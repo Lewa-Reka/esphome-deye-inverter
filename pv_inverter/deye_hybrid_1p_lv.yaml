@@ -9,10 +9,12 @@ substitutions:
   default_max_sell_power: "6000" # Watts
   default_system_work_mode: "Zero Export To Load" # "Selling First", "Zero Export To Load", "Zero Export To CT"
   default_solar_sell: "on" # "on", "off"
+  default_force_off_grid: "off" # "on", "off"
 
 packages:
   init: !include packages/init.yaml
   safe_mode_params: !include shared/safe_mode_params.yaml
+  board_diagnostic: !include shared/board_diagnostic.yaml
   battery: !include packages/deye_hybrid_1p/battery.yaml
   gen: !include packages/deye_hybrid_1p/gen.yaml
   grid: !include packages/deye_hybrid_1p/grid.yaml
@@ -22,6 +24,9 @@ packages:
   inverter: !include packages/deye_hybrid_1p/inverter.yaml
   pv: !include packages/deye_hybrid_1p/pv.yaml
   tou: !include packages/deye_hybrid_1p/tou.yaml
+
+select:
+  - id: !remove safe_mode_force_off_grid
 
 script:
   - id: set_safe_modbus_registers
@@ -37,6 +42,13 @@ script:
           value: !lambda "return id(safe_mode_max_sell_power).state;"
       - select.set:
           id: system_work_mode
-          option: !lambda "return id(safe_mode_system_work_mode).state;"
-      - switch.turn_${default_solar_sell}:
-          id: switch_solar_sell
+          option: !lambda "return id(safe_mode_system_work_mode).current_option();"
+      - if:
+          condition:
+            lambda: 'return id(safe_mode_solar_sell).current_option() == "on";'
+          then:
+            - switch.turn_on:
+                id: switch_solar_sell
+          else:
+            - switch.turn_off:
+                id: switch_solar_sell

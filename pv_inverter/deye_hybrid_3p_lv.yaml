@@ -28,6 +28,7 @@ substitutions:
 packages:
   init: !include packages/init.yaml
   safe_mode_params: !include shared/safe_mode_params.yaml
+  board_diagnostic: !include shared/board_diagnostic.yaml
   battery: !include packages/deye_hybrid_3p/battery.yaml
   gen: !include packages/deye_hybrid_3p/gen.yaml
   grid: !include packages/deye_hybrid_3p/grid.yaml
@@ -53,8 +54,22 @@ script:
           value: !lambda "return id(safe_mode_max_sell_power).state;"
       - select.set:
           id: system_work_mode
-          option: !lambda "return id(safe_mode_system_work_mode).state;"
-      - switch.turn_${default_solar_sell}:
-          id: switch_solar_sell
-      - switch.turn_${default_force_off_grid}:
-          id: switch_off_grid
+          option: !lambda "return id(safe_mode_system_work_mode).current_option();"
+      - if:
+          condition:
+            lambda: 'return id(safe_mode_solar_sell).current_option() == "on";'
+          then:
+            - switch.turn_on:
+                id: switch_solar_sell
+          else:
+            - switch.turn_off:
+                id: switch_solar_sell
+      - if:
+          condition:
+            lambda: 'return id(safe_mode_force_off_grid).current_option() == "on";'
+          then:
+            - switch.turn_on:
+                id: switch_off_grid
+          else:
+            - switch.turn_off:
+                id: switch_off_grid
