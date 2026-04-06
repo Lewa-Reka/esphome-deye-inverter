@@ -60,13 +60,13 @@ wifi:
 captive_portal:
 
 uart:
-  id: modbus_uart
-  baud_rate: ${baud_rate}
-  stop_bits: 1
+  - id: modbus_uart
+    baud_rate: ${baud_rate}
+    stop_bits: 1
 
 modbus:
-  id: modbus_1
-  uart_id: modbus_uart
+  - id: modbus_1
+    uart_id: modbus_uart
 
 modbus_controller:
   - id: ${modbus_controller_id}
