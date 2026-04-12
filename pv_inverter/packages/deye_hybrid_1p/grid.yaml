@@ -319,11 +319,13 @@ number:
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: config
-    register_type: holding
+    register_type: holding    
     min_value: 100
     max_value: 290
     step: 1
     address: 287
+    filters:
+      - multiply: 0.01    
     value_type: U_WORD
     mode: box
     icon: "mdi:sine-wave"
@@ -341,6 +343,8 @@ number:
     max_value: 290
     step: 1
     address: 288
+    filters:
+      - multiply: 100    
     value_type: U_WORD
     mode: box
     icon: "mdi:sine-wave"
