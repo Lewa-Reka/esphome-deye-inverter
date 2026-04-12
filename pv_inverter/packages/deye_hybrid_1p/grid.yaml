@@ -324,7 +324,7 @@ number:
     max_value: 290
     step: 1
     address: 287
-    multiply: 0.01    
+    multiply: 0.1    
     value_type: U_WORD
     mode: box
     icon: "mdi:sine-wave"
@@ -342,7 +342,7 @@ number:
     max_value: 290
     step: 1
     address: 288
-    multiply: 100    
+    multiply: 0.1    
     value_type: U_WORD
     mode: box
     icon: "mdi:sine-wave"
@@ -360,6 +360,7 @@ number:
     max_value: 65
     step: 1
     address: 289
+    multiply: 0.01
     value_type: U_WORD
     mode: box
     icon: "mdi:sine-wave"
@@ -377,6 +378,7 @@ number:
     max_value: 65
     step: 1
     address: 290
+    multiply: 0.01
     value_type: U_WORD
     mode: box
     icon: "mdi:sine-wave"
