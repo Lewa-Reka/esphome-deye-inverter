@@ -815,3 +815,16 @@ number:
     value_type: U_WORD
     mode: box
     icon: "mdi:battery-charging-50"
+
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id} 
+    name: "${name} Force Grid Charge Start SOC"
+    register_type: holding
+    address: 191
+    value_type: U_WORD
+    unit_of_measurement: "%"
+    icon: "mdi:battery-charging-high"
+    entity_category: config
+    min_value: 0
+    max_value: 100
+    step: 1
