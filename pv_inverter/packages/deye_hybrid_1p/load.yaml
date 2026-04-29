@@ -45,6 +45,7 @@ sensor:
     address: 176
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
@@ -56,6 +57,7 @@ sensor:
     address: 177
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
@@ -67,6 +69,7 @@ sensor:
     address: 178
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: S_WORD
     icon: "mdi:home-lightning-bolt"
