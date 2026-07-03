@@ -43,6 +43,8 @@ sensor:
     name: "Load L1 Power"
     register_type: holding
     address: 176
+    filters:
+      - lambda: 'return std::isnan(id(ac_power_ratio).state) ? x : x * id(ac_power_ratio).state;'
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
@@ -55,6 +57,8 @@ sensor:
     name: "Load L2 Power"
     register_type: holding
     address: 177
+    filters:
+      - lambda: 'return std::isnan(id(ac_power_ratio).state) ? x : x * id(ac_power_ratio).state;'
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
@@ -67,6 +71,8 @@ sensor:
     name: "Load Power"
     register_type: holding
     address: 178
+    filters:
+      - lambda: 'return std::isnan(id(ac_power_ratio).state) ? x : x * id(ac_power_ratio).state;'
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"

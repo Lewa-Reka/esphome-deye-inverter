@@ -21,11 +21,27 @@ globals:
     restore_value: yes
 
 sensor:
+  # Register 54 = "AC power ratio" (1 or 10). Per the V119 protocol, the AC power
+  # registers 167-169, 170-172 and 176-178 are reported in units of this value (1W
+  # or 10W per LSB). Read it once and multiply those power sensors by it.
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
+    name: "AC Power Ratio"
+    id: ac_power_ratio
+    register_type: holding
+    address: 54
+    value_type: U_WORD
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    icon: "mdi:multiplication"
+
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Grid L1 Power"
     register_type: holding
     address: 167
+    filters:
+      - lambda: 'return std::isnan(id(ac_power_ratio).state) ? x : x * id(ac_power_ratio).state;'
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
@@ -38,6 +54,8 @@ sensor:
     name: "Grid L2 Power"
     register_type: holding
     address: 168
+    filters:
+      - lambda: 'return std::isnan(id(ac_power_ratio).state) ? x : x * id(ac_power_ratio).state;'
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
@@ -50,6 +68,8 @@ sensor:
     name: "Grid Power"
     register_type: holding
     address: 169
+    filters:
+      - lambda: 'return std::isnan(id(ac_power_ratio).state) ? x : x * id(ac_power_ratio).state;'
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
@@ -208,6 +228,8 @@ sensor:
     name: "External CT L1 Power"
     register_type: holding
     address: 170
+    filters:
+      - lambda: 'return std::isnan(id(ac_power_ratio).state) ? x : x * id(ac_power_ratio).state;'
     unit_of_measurement: "W"
     device_class: power
     accuracy_decimals: 0
@@ -219,6 +241,8 @@ sensor:
     name: "External CT L2 Power"
     register_type: holding
     address: 171
+    filters:
+      - lambda: 'return std::isnan(id(ac_power_ratio).state) ? x : x * id(ac_power_ratio).state;'
     unit_of_measurement: "W"
     device_class: power
     accuracy_decimals: 0
@@ -230,6 +254,8 @@ sensor:
     name: "External CT Power"
     register_type: holding
     address: 172
+    filters:
+      - lambda: 'return std::isnan(id(ac_power_ratio).state) ? x : x * id(ac_power_ratio).state;'
     unit_of_measurement: "W"
     device_class: power
     accuracy_decimals: 0
