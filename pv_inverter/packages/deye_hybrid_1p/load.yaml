@@ -11,6 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+substitutions:
+  # Register 54 = "AC power ratio" (defined in grid.yaml). Only scale when it
+  # reads a known 10W/LSB value; pass raw watts through otherwise (covers 1,
+  # 0/unsupported and the not-yet-read NaN state).
+  func_scale_ac_power: "return (id(ac_power_ratio).state == 10.0f) ? x * 10.0f : x;"
+
 sensor:
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
@@ -43,6 +50,8 @@ sensor:
     name: "Load L1 Power"
     register_type: holding
     address: 176
+    filters:
+      - lambda: ${func_scale_ac_power}
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
@@ -55,6 +64,8 @@ sensor:
     name: "Load L2 Power"
     register_type: holding
     address: 177
+    filters:
+      - lambda: ${func_scale_ac_power}
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
@@ -67,6 +78,8 @@ sensor:
     name: "Load Power"
     register_type: holding
     address: 178
+    filters:
+      - lambda: ${func_scale_ac_power}
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
