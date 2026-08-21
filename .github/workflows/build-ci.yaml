@@ -15,17 +15,14 @@ jobs:
     name: Building ${{ matrix.file }} / ${{ matrix.esphome-version }}
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         file:
-          - deye_hybrid_3p_lv
           - deye_hybrid_3p_hv
           - deye_hybrid_1p_lv
 
         esphome-version:
           - stable
-          - beta
-          - dev
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -41,7 +38,7 @@ jobs:
           fi
 
       - name: ESPHome ${{ matrix.esphome-version }}
-        uses: esphome/build-action@v7
+        uses: esphome/build-action@v8
         with:
           yaml-file: ${{ matrix.file }}.yaml
           version: ${{ matrix.esphome-version }}

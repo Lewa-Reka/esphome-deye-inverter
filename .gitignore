@@ -6,3 +6,4 @@
 /secrets.yaml
 pv-inv-local-test.yaml
 debug.log
+.cursor/
