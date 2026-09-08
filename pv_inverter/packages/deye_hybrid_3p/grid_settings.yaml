@@ -1,0 +1,2973 @@
+# Copyright 2026 Lewa-Reka <lewareka.yt@gmail.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Optional 3P package: grid protection and grid-support curves (Modbus RTU V105.4).
+# Writes are blocked unless "Allow Changes (AT YOUR OWN RISK)" is on. Not included by default.
+
+esphome:
+  min_version: "2025.7.0"
+  devices:
+    - id: grid_settings_device
+      name: "${friendly_name} Grid Settings"
+
+switch:
+  - platform: template
+    name: "Allow Changes (AT YOUR OWN RISK)"
+    id: allow_grid_settings_changes
+    icon: "mdi:alert-octagon"
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+    entity_category: config
+    device_id: grid_settings_device
+
+  - platform: template
+    name: "P(U) Enable"
+    id: switch_v_watt_enable
+    icon: "mdi:sine-wave"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    lambda: "return ((int)id(grid_settings_reg_365_raw).state) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_365_raw
+                value: 1
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_v_watt_enable);
+                bool actual = ((int)id(grid_settings_reg_365_raw).state) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_365_raw
+                value: 0
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_v_watt_enable);
+                bool actual = ((int)id(grid_settings_reg_365_raw).state) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+  - platform: template
+    name: "Q(U) Enable"
+    id: switch_volt_var_enable
+    icon: "mdi:cosine-wave"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    lambda: "return (((int)id(grid_settings_reg_374_raw).state) & 0x1) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_374_raw
+                value: !lambda "return ((int)id(grid_settings_reg_374_raw).state) | 0x1;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_volt_var_enable);
+                bool actual = (((int)id(grid_settings_reg_374_raw).state) & 0x1) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_374_raw
+                value: !lambda "return ((int)id(grid_settings_reg_374_raw).state) & ~0x1;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_volt_var_enable);
+                bool actual = (((int)id(grid_settings_reg_374_raw).state) & 0x1) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+  - platform: template
+    name: "Q(U) Pref Pmax"
+    id: switch_volt_var_pref_pmax
+    icon: "mdi:cosine-wave"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    lambda: "return (((int)id(grid_settings_reg_374_raw).state) & 0x2) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_374_raw
+                value: !lambda "return ((int)id(grid_settings_reg_374_raw).state) | 0x2;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_volt_var_pref_pmax);
+                bool actual = (((int)id(grid_settings_reg_374_raw).state) & 0x2) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_374_raw
+                value: !lambda "return ((int)id(grid_settings_reg_374_raw).state) & ~0x2;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_volt_var_pref_pmax);
+                bool actual = (((int)id(grid_settings_reg_374_raw).state) & 0x2) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+  - platform: template
+    name: "Q(U) Fixed PF"
+    id: switch_volt_var_fixed_pf
+    icon: "mdi:cosine-wave"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    lambda: "return (((int)id(grid_settings_reg_374_raw).state) & 0x4) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_374_raw
+                value: !lambda "return ((int)id(grid_settings_reg_374_raw).state) | 0x4;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_volt_var_fixed_pf);
+                bool actual = (((int)id(grid_settings_reg_374_raw).state) & 0x4) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_374_raw
+                value: !lambda "return ((int)id(grid_settings_reg_374_raw).state) & ~0x4;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_volt_var_fixed_pf);
+                bool actual = (((int)id(grid_settings_reg_374_raw).state) & 0x4) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+  - platform: template
+    name: "Q(U) Fixed Qn"
+    id: switch_volt_var_fixed_qn
+    icon: "mdi:cosine-wave"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    lambda: "return (((int)id(grid_settings_reg_374_raw).state) & 0x8) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_374_raw
+                value: !lambda "return ((int)id(grid_settings_reg_374_raw).state) | 0x8;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_volt_var_fixed_qn);
+                bool actual = (((int)id(grid_settings_reg_374_raw).state) & 0x8) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_374_raw
+                value: !lambda "return ((int)id(grid_settings_reg_374_raw).state) & ~0x8;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_volt_var_fixed_qn);
+                bool actual = (((int)id(grid_settings_reg_374_raw).state) & 0x8) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+  - platform: template
+    name: "P(f) Overfreq Freeze Inhibit"
+    id: switch_freq_watt_overfreq_freeze_inhibit
+    icon: "mdi:sine-wave"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    disabled_by_default: true
+    lambda: "return (((int)id(grid_settings_reg_383_raw).state) & 0x4) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_383_raw
+                value: !lambda "return ((int)id(grid_settings_reg_383_raw).state) | 0x4;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_freq_watt_overfreq_freeze_inhibit);
+                bool actual = (((int)id(grid_settings_reg_383_raw).state) & 0x4) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_383_raw
+                value: !lambda "return ((int)id(grid_settings_reg_383_raw).state) & ~0x4;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_freq_watt_overfreq_freeze_inhibit);
+                bool actual = (((int)id(grid_settings_reg_383_raw).state) & 0x4) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+  - platform: template
+    name: "P(f) Underfreq Freeze Inhibit"
+    id: switch_freq_watt_underfreq_freeze_inhibit
+    icon: "mdi:sine-wave"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    disabled_by_default: true
+    lambda: "return (((int)id(grid_settings_reg_383_raw).state) & 0x8) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_383_raw
+                value: !lambda "return ((int)id(grid_settings_reg_383_raw).state) | 0x8;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_freq_watt_underfreq_freeze_inhibit);
+                bool actual = (((int)id(grid_settings_reg_383_raw).state) & 0x8) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_383_raw
+                value: !lambda "return ((int)id(grid_settings_reg_383_raw).state) & ~0x8;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_freq_watt_underfreq_freeze_inhibit);
+                bool actual = (((int)id(grid_settings_reg_383_raw).state) & 0x8) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+  - platform: template
+    name: "P(f) Pref"
+    id: switch_freq_watt_pref
+    icon: "mdi:sine-wave"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    disabled_by_default: true
+    lambda: "return (((int)id(grid_settings_reg_383_raw).state) & 0x10) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_383_raw
+                value: !lambda "return ((int)id(grid_settings_reg_383_raw).state) | 0x10;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_freq_watt_pref);
+                bool actual = (((int)id(grid_settings_reg_383_raw).state) & 0x10) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_383_raw
+                value: !lambda "return ((int)id(grid_settings_reg_383_raw).state) & ~0x10;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_freq_watt_pref);
+                bool actual = (((int)id(grid_settings_reg_383_raw).state) & 0x10) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+  - platform: template
+    name: "P(f) FFR"
+    id: switch_freq_watt_ffr
+    icon: "mdi:sine-wave"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    disabled_by_default: true
+    lambda: "return (((int)id(grid_settings_reg_383_raw).state) & 0x80) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_383_raw
+                value: !lambda "return ((int)id(grid_settings_reg_383_raw).state) | 0x80;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_freq_watt_ffr);
+                bool actual = (((int)id(grid_settings_reg_383_raw).state) & 0x80) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_383_raw
+                value: !lambda "return ((int)id(grid_settings_reg_383_raw).state) & ~0x80;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_freq_watt_ffr);
+                bool actual = (((int)id(grid_settings_reg_383_raw).state) & 0x80) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+  - platform: template
+    name: "Q(P) Enable"
+    id: switch_watt_var_enable
+    icon: "mdi:flash"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    lambda: "return ((int)id(grid_settings_reg_395_raw).state) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_395_raw
+                value: 1
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_watt_var_enable);
+                bool actual = ((int)id(grid_settings_reg_395_raw).state) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_395_raw
+                value: 0
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_watt_var_enable);
+                bool actual = ((int)id(grid_settings_reg_395_raw).state) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+  - platform: template
+    name: "PF(P) Enable"
+    id: switch_watt_pf_enable
+    icon: "mdi:angle-acute"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    lambda: "return ((int)id(grid_settings_reg_404_raw).state) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_404_raw
+                value: 1
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_watt_pf_enable);
+                bool actual = ((int)id(grid_settings_reg_404_raw).state) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_404_raw
+                value: 0
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_watt_pf_enable);
+                bool actual = ((int)id(grid_settings_reg_404_raw).state) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+  - platform: template
+    name: "LVRT Enable"
+    id: switch_lvrt_enable
+    icon: "mdi:transmission-tower"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    lambda: "return (((int)id(grid_settings_reg_482_raw).state) & 0x1) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_482_raw
+                value: !lambda "return ((int)id(grid_settings_reg_482_raw).state) | 0x1;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_lvrt_enable);
+                bool actual = (((int)id(grid_settings_reg_482_raw).state) & 0x1) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_482_raw
+                value: !lambda "return ((int)id(grid_settings_reg_482_raw).state) & ~0x1;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_lvrt_enable);
+                bool actual = (((int)id(grid_settings_reg_482_raw).state) & 0x1) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+  - platform: template
+    name: "HVRT Enable"
+    id: switch_hvrt_enable
+    icon: "mdi:transmission-tower"
+    restore_mode: DISABLED
+    entity_category: config
+    device_id: grid_settings_device
+    lambda: "return (((int)id(grid_settings_reg_482_raw).state) & 0x2) != 0;"
+    turn_on_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_482_raw
+                value: !lambda "return ((int)id(grid_settings_reg_482_raw).state) | 0x2;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_hvrt_enable);
+                bool actual = (((int)id(grid_settings_reg_482_raw).state) & 0x2) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+    turn_off_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - number.set:
+                id: grid_settings_reg_482_raw
+                value: !lambda "return ((int)id(grid_settings_reg_482_raw).state) & ~0x2;"
+          else:
+            - delay: 500ms
+            - lambda: |-
+                auto *sw = id(switch_hvrt_enable);
+                bool actual = (((int)id(grid_settings_reg_482_raw).state) & 0x2) != 0;
+                sw->publish_state(!actual);
+                sw->publish_state(actual);
+
+select:
+  - platform: template
+    name: "P(f)"
+    id: select_freq_watt_mode
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    update_interval: 1s
+    options:
+      - "Disable"
+      - "Under Freq Enable"
+      - "Over Freq Enable"
+      - "Under Freq and Over Freq Enable"
+    lambda: |-
+      int mode = ((int)id(grid_settings_reg_383_raw).state) & 0x3;
+      if (mode == 1) return std::string("Under Freq Enable");
+      if (mode == 2) return std::string("Over Freq Enable");
+      if (mode == 3) return std::string("Under Freq and Over Freq Enable");
+      return std::string("Disable");
+    set_action:
+      - if:
+          condition:
+            switch.is_on: allow_grid_settings_changes
+          then:
+            - lambda: |-
+                int raw = (int)id(grid_settings_reg_383_raw).state;
+                int mode = 0;
+                if (x == "Under Freq Enable") mode = 1;
+                else if (x == "Over Freq Enable") mode = 2;
+                else if (x == "Under Freq and Over Freq Enable") mode = 3;
+                auto call = id(grid_settings_reg_383_raw).make_call();
+                call.set_value((raw & ~0x3) | mode);
+                call.perform();
+          else:
+            - delay: 500ms
+            - component.update: select_freq_watt_mode
+
+number:
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Grid Settings Reg 365 Raw"
+    id: grid_settings_reg_365_raw
+    register_type: holding
+    address: 365
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    step: 1
+    mode: box
+    icon: "mdi:file-cog"
+    internal: true
+    skip_updates: 11
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Grid Settings Reg 374 Raw"
+    id: grid_settings_reg_374_raw
+    register_type: holding
+    address: 374
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    step: 1
+    mode: box
+    icon: "mdi:file-cog"
+    internal: true
+    skip_updates: 11
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Grid Settings Reg 383 Raw"
+    id: grid_settings_reg_383_raw
+    register_type: holding
+    address: 383
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    step: 1
+    mode: box
+    icon: "mdi:file-cog"
+    internal: true
+    skip_updates: 11
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Grid Settings Reg 395 Raw"
+    id: grid_settings_reg_395_raw
+    register_type: holding
+    address: 395
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    step: 1
+    mode: box
+    icon: "mdi:file-cog"
+    internal: true
+    skip_updates: 11
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Grid Settings Reg 404 Raw"
+    id: grid_settings_reg_404_raw
+    register_type: holding
+    address: 404
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    step: 1
+    mode: box
+    icon: "mdi:file-cog"
+    internal: true
+    skip_updates: 11
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Grid Settings Reg 482 Raw"
+    id: grid_settings_reg_482_raw
+    register_type: holding
+    address: 482
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    step: 1
+    mode: box
+    icon: "mdi:file-cog"
+    internal: true
+    skip_updates: 11
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Grid Voltage High"
+    id: grid_voltage_high
+    register_type: holding
+    address: 185
+    value_type: U_WORD
+    min_value: 180
+    max_value: 270
+    step: 0.1
+    mode: box
+    icon: "mdi:flash-triangle-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "V"
+    device_class: voltage
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Grid Voltage Low"
+    id: grid_voltage_low
+    register_type: holding
+    address: 186
+    value_type: U_WORD
+    min_value: 180
+    max_value: 270
+    step: 0.1
+    mode: box
+    icon: "mdi:flash-alert-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "V"
+    device_class: voltage
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Grid Frequency High"
+    id: grid_frequency_high
+    register_type: holding
+    address: 187
+    value_type: U_WORD
+    min_value: 45
+    max_value: 65
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "Hz"
+    device_class: frequency
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Grid Frequency Low"
+    id: grid_frequency_low
+    register_type: holding
+    address: 188
+    value_type: U_WORD
+    min_value: 45
+    max_value: 65
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "Hz"
+    device_class: frequency
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Reconnect Voltage Max"
+    id: reconnect_voltage_max
+    register_type: holding
+    address: 350
+    value_type: U_WORD
+    min_value: 0
+    max_value: 1000
+    step: 0.1
+    mode: box
+    icon: "mdi:transmission-tower"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "V"
+    device_class: voltage
+    skip_updates: 11
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Reconnect Voltage Min"
+    id: reconnect_voltage_min
+    register_type: holding
+    address: 351
+    value_type: U_WORD
+    min_value: 0
+    max_value: 1000
+    step: 0.1
+    mode: box
+    icon: "mdi:transmission-tower"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "V"
+    device_class: voltage
+    skip_updates: 11
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Reconnect Frequency Max"
+    id: reconnect_frequency_max
+    register_type: holding
+    address: 352
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "Hz"
+    device_class: frequency
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Reconnect Frequency Min"
+    id: reconnect_frequency_min
+    register_type: holding
+    address: 353
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "Hz"
+    device_class: frequency
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Over Voltage Trip 1"
+    id: over_voltage_trip_1
+    register_type: holding
+    address: 354
+    value_type: U_WORD
+    min_value: 0
+    max_value: 1000
+    step: 0.1
+    mode: box
+    icon: "mdi:flash-triangle-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "V"
+    device_class: voltage
+    skip_updates: 11
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Over Voltage Trip 2"
+    id: over_voltage_trip_2
+    register_type: holding
+    address: 355
+    value_type: U_WORD
+    min_value: 0
+    max_value: 1000
+    step: 0.1
+    mode: box
+    icon: "mdi:flash-triangle-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "V"
+    device_class: voltage
+    skip_updates: 11
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Under Voltage Trip 1"
+    id: under_voltage_trip_1
+    register_type: holding
+    address: 356
+    value_type: U_WORD
+    min_value: 0
+    max_value: 1000
+    step: 0.1
+    mode: box
+    icon: "mdi:flash-alert-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "V"
+    device_class: voltage
+    skip_updates: 11
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Under Voltage Trip 2"
+    id: under_voltage_trip_2
+    register_type: holding
+    address: 357
+    value_type: U_WORD
+    min_value: 0
+    max_value: 1000
+    step: 0.1
+    mode: box
+    icon: "mdi:flash-alert-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "V"
+    device_class: voltage
+    skip_updates: 11
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Over Frequency Trip 1"
+    id: over_frequency_trip_1
+    register_type: holding
+    address: 358
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "Hz"
+    device_class: frequency
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Over Frequency Trip 2"
+    id: over_frequency_trip_2
+    register_type: holding
+    address: 359
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "Hz"
+    device_class: frequency
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Under Frequency Trip 1"
+    id: under_frequency_trip_1
+    register_type: holding
+    address: 360
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "Hz"
+    device_class: frequency
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Under Frequency Trip 2"
+    id: under_frequency_trip_2
+    register_type: holding
+    address: 361
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "Hz"
+    device_class: frequency
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Over Voltage Long Trip"
+    id: over_voltage_long_trip
+    register_type: holding
+    address: 362
+    value_type: U_WORD
+    min_value: 0
+    max_value: 1000
+    step: 0.1
+    mode: box
+    icon: "mdi:flash-triangle-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "V"
+    device_class: voltage
+    skip_updates: 11
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(U) Lock In"
+    id: volt_var_lock_in
+    register_type: holding
+    address: 363
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:lock"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(U) Lock Out"
+    id: volt_var_lock_out
+    register_type: holding
+    address: 364
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:lock-open"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(U) Voltage 1"
+    id: v_watt_voltage_1
+    register_type: holding
+    address: 366
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(U) Power 1"
+    id: v_watt_power_1
+    register_type: holding
+    address: 367
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:flash"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(U) Voltage 2"
+    id: v_watt_voltage_2
+    register_type: holding
+    address: 368
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(U) Power 2"
+    id: v_watt_power_2
+    register_type: holding
+    address: 369
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:flash"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(U) Voltage 3"
+    id: v_watt_voltage_3
+    register_type: holding
+    address: 370
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(U) Power 3"
+    id: v_watt_power_3
+    register_type: holding
+    address: 371
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:flash"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(U) Voltage 4"
+    id: v_watt_voltage_4
+    register_type: holding
+    address: 372
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(U) Power 4"
+    id: v_watt_power_4
+    register_type: holding
+    address: 373
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:flash"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(U) Voltage 1"
+    id: volt_var_voltage_1
+    register_type: holding
+    address: 375
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(U) Reactive 1"
+    id: volt_var_reactive_1
+    register_type: holding
+    address: 376
+    value_type: S_WORD
+    min_value: -70
+    max_value: 70
+    step: 0.01
+    mode: box
+    icon: "mdi:cosine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(U) Voltage 2"
+    id: volt_var_voltage_2
+    register_type: holding
+    address: 377
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(U) Reactive 2"
+    id: volt_var_reactive_2
+    register_type: holding
+    address: 378
+    value_type: S_WORD
+    min_value: -70
+    max_value: 70
+    step: 0.01
+    mode: box
+    icon: "mdi:cosine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(U) Voltage 3"
+    id: volt_var_voltage_3
+    register_type: holding
+    address: 379
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(U) Reactive 3"
+    id: volt_var_reactive_3
+    register_type: holding
+    address: 380
+    value_type: S_WORD
+    min_value: -70
+    max_value: 70
+    step: 0.01
+    mode: box
+    icon: "mdi:cosine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(U) Voltage 4"
+    id: volt_var_voltage_4
+    register_type: holding
+    address: 381
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(U) Reactive 4"
+    id: volt_var_reactive_4
+    register_type: holding
+    address: 382
+    value_type: S_WORD
+    min_value: -70
+    max_value: 70
+    step: 0.01
+    mode: box
+    icon: "mdi:cosine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(f) Stop Freq Under"
+    id: freq_watt_under_stop
+    register_type: holding
+    address: 384
+    value_type: U_WORD
+    min_value: 45
+    max_value: 65
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "Hz"
+    device_class: frequency
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(f) Start Freq Under"
+    id: freq_watt_under_hz_1
+    register_type: holding
+    address: 385
+    value_type: U_WORD
+    min_value: 45
+    max_value: 65
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "Hz"
+    device_class: frequency
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(f) Drop Under"
+    id: freq_watt_under_droop_1
+    register_type: holding
+    address: 386
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%PE/Hz"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(f) Start Delay Under"
+    id: freq_watt_under_start_delay
+    register_type: holding
+    address: 387
+    value_type: U_WORD
+    min_value: 0
+    max_value: 6553.5
+    step: 0.1
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(f) Stop Delay Under"
+    id: freq_watt_under_stop_delay
+    register_type: holding
+    address: 388
+    value_type: U_WORD
+    min_value: 0
+    max_value: 6553.5
+    step: 0.1
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(f) Stop Freq Over"
+    id: freq_watt_over_stop_hz
+    register_type: holding
+    address: 389
+    value_type: U_WORD
+    min_value: 45
+    max_value: 65
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "Hz"
+    device_class: frequency
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(f) Start Freq Over"
+    id: freq_watt_over_hz_1
+    register_type: holding
+    address: 390
+    value_type: U_WORD
+    min_value: 45
+    max_value: 65
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "Hz"
+    device_class: frequency
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(f) Drop Over"
+    id: freq_watt_over_droop_1
+    register_type: holding
+    address: 391
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:sine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%PE/Hz"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(f) Start Delay Over"
+    id: freq_watt_over_start_delay
+    register_type: holding
+    address: 392
+    value_type: U_WORD
+    min_value: 0
+    max_value: 6553.5
+    step: 0.1
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "P(f) Stop Delay Over"
+    id: freq_watt_over_stop_delay
+    register_type: holding
+    address: 393
+    value_type: U_WORD
+    min_value: 0
+    max_value: 6553.5
+    step: 0.1
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 10
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 10;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(P) Power 1"
+    id: watt_var_power_1
+    register_type: holding
+    address: 396
+    value_type: S_WORD
+    min_value: -100
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:flash"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(P) Reactive 1"
+    id: watt_var_reactive_1
+    register_type: holding
+    address: 397
+    value_type: S_WORD
+    min_value: -70
+    max_value: 70
+    step: 0.01
+    mode: box
+    icon: "mdi:cosine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(P) Power 2"
+    id: watt_var_power_2
+    register_type: holding
+    address: 398
+    value_type: S_WORD
+    min_value: -100
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:flash"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(P) Reactive 2"
+    id: watt_var_reactive_2
+    register_type: holding
+    address: 399
+    value_type: S_WORD
+    min_value: -70
+    max_value: 70
+    step: 0.01
+    mode: box
+    icon: "mdi:cosine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(P) Power 3"
+    id: watt_var_power_3
+    register_type: holding
+    address: 400
+    value_type: S_WORD
+    min_value: -100
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:flash"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(P) Reactive 3"
+    id: watt_var_reactive_3
+    register_type: holding
+    address: 401
+    value_type: S_WORD
+    min_value: -70
+    max_value: 70
+    step: 0.01
+    mode: box
+    icon: "mdi:cosine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(P) Power 4"
+    id: watt_var_power_4
+    register_type: holding
+    address: 402
+    value_type: S_WORD
+    min_value: -100
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:flash"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Q(P) Reactive 4"
+    id: watt_var_reactive_4
+    register_type: holding
+    address: 403
+    value_type: S_WORD
+    min_value: -70
+    max_value: 70
+    step: 0.01
+    mode: box
+    icon: "mdi:cosine-wave"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "PF(P) Power 1"
+    id: watt_pf_power_1
+    register_type: holding
+    address: 405
+    value_type: S_WORD
+    min_value: -100
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:flash"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "PF(P) PF 1"
+    id: watt_pf_pf_1
+    register_type: holding
+    address: 406
+    value_type: S_WORD
+    min_value: -1
+    max_value: 1
+    step: 0.001
+    mode: box
+    icon: "mdi:angle-acute"
+    entity_category: config
+    device_id: grid_settings_device
+    skip_updates: 11
+    multiply: 1000
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 1000;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "PF(P) Power 2"
+    id: watt_pf_power_2
+    register_type: holding
+    address: 407
+    value_type: S_WORD
+    min_value: -100
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:flash"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "PF(P) PF 2"
+    id: watt_pf_pf_2
+    register_type: holding
+    address: 408
+    value_type: S_WORD
+    min_value: -1
+    max_value: 1
+    step: 0.001
+    mode: box
+    icon: "mdi:angle-acute"
+    entity_category: config
+    device_id: grid_settings_device
+    skip_updates: 11
+    multiply: 1000
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 1000;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "PF(P) Power 3"
+    id: watt_pf_power_3
+    register_type: holding
+    address: 409
+    value_type: S_WORD
+    min_value: -100
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:flash"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "PF(P) PF 3"
+    id: watt_pf_pf_3
+    register_type: holding
+    address: 410
+    value_type: S_WORD
+    min_value: -1
+    max_value: 1
+    step: 0.001
+    mode: box
+    icon: "mdi:angle-acute"
+    entity_category: config
+    device_id: grid_settings_device
+    skip_updates: 11
+    multiply: 1000
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 1000;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "PF(P) Power 4"
+    id: watt_pf_power_4
+    register_type: holding
+    address: 411
+    value_type: S_WORD
+    min_value: -100
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:flash"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "PF(P) PF 4"
+    id: watt_pf_pf_4
+    register_type: holding
+    address: 412
+    value_type: S_WORD
+    min_value: -1
+    max_value: 1
+    step: 0.001
+    mode: box
+    icon: "mdi:angle-acute"
+    entity_category: config
+    device_id: grid_settings_device
+    skip_updates: 11
+    multiply: 1000
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 1000;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Over Voltage Trip 1 Delay"
+    id: over_voltage_trip_1_delay
+    register_type: holding
+    address: 417
+    value_type: U_WORD
+    min_value: 0.01
+    max_value: 60
+    step: 0.01
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Over Voltage Trip 2 Delay"
+    id: over_voltage_trip_2_delay
+    register_type: holding
+    address: 418
+    value_type: U_WORD
+    min_value: 0.01
+    max_value: 60
+    step: 0.01
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Under Voltage Trip 1 Delay"
+    id: under_voltage_trip_1_delay
+    register_type: holding
+    address: 419
+    value_type: U_WORD
+    min_value: 0.01
+    max_value: 60
+    step: 0.01
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Under Voltage Trip 2 Delay"
+    id: under_voltage_trip_2_delay
+    register_type: holding
+    address: 420
+    value_type: U_WORD
+    min_value: 0.01
+    max_value: 60
+    step: 0.01
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Over Frequency Trip 1 Delay"
+    id: over_frequency_trip_1_delay
+    register_type: holding
+    address: 421
+    value_type: U_WORD
+    min_value: 0.01
+    max_value: 60
+    step: 0.01
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Over Frequency Trip 2 Delay"
+    id: over_frequency_trip_2_delay
+    register_type: holding
+    address: 422
+    value_type: U_WORD
+    min_value: 0.01
+    max_value: 60
+    step: 0.01
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Under Frequency Trip 1 Delay"
+    id: under_frequency_trip_1_delay
+    register_type: holding
+    address: 423
+    value_type: U_WORD
+    min_value: 0.01
+    max_value: 60
+    step: 0.01
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Under Frequency Trip 2 Delay"
+    id: under_frequency_trip_2_delay
+    register_type: holding
+    address: 424
+    value_type: U_WORD
+    min_value: 0.01
+    max_value: 60
+    step: 0.01
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "LVRT 1"
+    id: lvrt_1
+    register_type: holding
+    address: 483
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:transmission-tower"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "LVRT 2"
+    id: lvrt_2
+    register_type: holding
+    address: 484
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:transmission-tower"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "HVRT 1"
+    id: hvrt_1
+    register_type: holding
+    address: 485
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:transmission-tower"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "HVRT 2"
+    id: hvrt_2
+    register_type: holding
+    address: 486
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:transmission-tower"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "HVRT 3"
+    id: hvrt_3
+    register_type: holding
+    address: 487
+    value_type: U_WORD
+    min_value: 0
+    max_value: 100
+    step: 0.01
+    mode: box
+    icon: "mdi:transmission-tower"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "%"
+    skip_updates: 11
+    multiply: 100
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 100;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "LVRT 1 Time"
+    id: lvrt_1_time
+    register_type: holding
+    address: 488
+    value_type: U_WORD
+    min_value: 0
+    max_value: 32.768
+    step: 0.001
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 1000
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 1000;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "LVRT 2 Time"
+    id: lvrt_2_time
+    register_type: holding
+    address: 489
+    value_type: U_WORD
+    min_value: 0
+    max_value: 32.768
+    step: 0.001
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 1000
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 1000;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "HVRT 1 Time"
+    id: hvrt_1_time
+    register_type: holding
+    address: 490
+    value_type: U_WORD
+    min_value: 0
+    max_value: 32.768
+    step: 0.001
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 1000
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 1000;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "HVRT 2 Time"
+    id: hvrt_2_time
+    register_type: holding
+    address: 491
+    value_type: U_WORD
+    min_value: 0
+    max_value: 32.768
+    step: 0.001
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 1000
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 1000;
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "HVRT 3 Time"
+    id: hvrt_3_time
+    register_type: holding
+    address: 492
+    value_type: U_WORD
+    min_value: 0
+    max_value: 32.768
+    step: 0.001
+    mode: box
+    icon: "mdi:timer-outline"
+    entity_category: config
+    device_id: grid_settings_device
+    unit_of_measurement: "s"
+    device_class: duration
+    skip_updates: 11
+    multiply: 1000
+    write_lambda: |-
+      if (!id(allow_grid_settings_changes).state) {
+        ESP_LOGW("grid_settings", "Write blocked");
+        float current = item->state;
+        item->publish_state(x);
+        item->set_timeout("gs_revert", 500, [item, current]() { item->publish_state(current); });
+        return {};
+      }
+      return x * 1000;

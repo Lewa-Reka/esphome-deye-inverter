@@ -26,6 +26,28 @@
 | `default_force_off_grid` | Force Off Grid switch state in safe mode | `"off"` | No | 3P only (SG0XLP3, SG0XHP3) |
 | `enable_sync_time` | Enable automatic time synchronization with Home Assistant | `false` | No | 3P only (SG0XLP3, SG0XHP3) |
 
+### Grid Settings package (3P only, opt-in)
+
+Optional package for grid protection and grid-support curves. Requires **ESPHome 2025.7.0** or newer (Home Assistant sub-devices). Not enabled in the default `pv-inverter.Deye-SG0XLP3.yaml` / `pv-inverter.Deye-SG0XHP3.yaml` files.
+
+Add a second GitHub package next to the inverter package:
+
+```yaml
+packages:
+  pv_inverter:
+    url: https://github.com/Lewa-Reka/esphome-deye-inverter
+    refresh: 12h
+    files: pv_inverter/deye_hybrid_3p_lv.yaml  # or pv_inverter/deye_hybrid_3p_hv.yaml
+  grid_settings:
+    url: https://github.com/Lewa-Reka/esphome-deye-inverter
+    refresh: 12h
+    files: pv_inverter/packages/deye_hybrid_3p/grid_settings.yaml
+```
+
+In Home Assistant you get a device named `{friendly_name} Grid Settings`. Values are read continuously from the inverter. Changing them writes to the inverter **only** when **Allow Changes (AT YOUR OWN RISK)** is on.
+
+Wrong values can disconnect the inverter from the grid or violate the local grid code.
+
 ### Default Hardware Configuration
 
 - **UART Pins**: GPIO17 (TX), GPIO16 (RX)
