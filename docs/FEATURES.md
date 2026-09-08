@@ -28,7 +28,7 @@ This project automatically integrates with Home Assistant through the ESPHome AP
 - **Power Limits**: Maximum selling and charging power settings
 - **Generator**: Control and monitoring (if connected)
 - **Time Synchronization** (3P only): Automatic and Manual time sync. Button available in Home Assistant
-- **Grid Settings** (3P only, opt-in): Grid protection, reconnect/trip limits, grid-support curves (V-Watt, Volt-VAR, Freq-Watt, Watt-VAR, Watt-PF), and LVRT/HVRT as a separate Home Assistant device. Writes are locked until **Allow Changes (DANGEROUS)** is turned on.
+- **Grid Settings** (3P only, opt-in): Grid protection, reconnect/trip limits, grid-support curves (P(U), Q(U), P(f), Q(P), PF(P)), and LVRT/HVRT as a separate Home Assistant device. Writes are locked until **Allow Changes (AT YOUR OWN RISK)** is turned on.
 
 ### Time of Use "All" Entities
 The system includes convenient "All" entities that allow you to control all Time of Use windows simultaneously:
@@ -56,7 +56,7 @@ The system includes comprehensive safety mechanisms:
 3. **Parameter Validation**: All settings are validated against safe operating ranges
 4. **Fallback Access**: Emergency WiFi hotspot with configurable password
 5. **Hardware Protection**: Modbus communication timeouts and error handling
-6. **Grid Settings write lock** (3P opt-in): Protection and grid-support registers stay readable; Modbus writes are ignored until **Allow Changes (DANGEROUS)** is on. The switch always starts **off** after reboot or OTA. Safe mode does not change these registers.
+6. **Grid Settings write lock** (3P opt-in): Protection and grid-support registers stay readable; Modbus writes are ignored until **Allow Changes (AT YOUR OWN RISK)** is on. With the lock off, a change in Home Assistant is shown briefly then reverted to the last value read from the inverter. The switch always starts **off** after reboot or OTA. Safe mode does not change these registers.
 
 ### Grid Settings (3P, optional)
 
@@ -66,10 +66,10 @@ Included:
 
 - Grid voltage/frequency protection (registers 185–188)
 - Reconnect and trip 1/2 values (350–362) and trip delays (417–424)
-- Grid-support curves: V-Watt, Volt-VAR, Freq-Watt, Watt-VAR, Watt-PF (363–412, excluding 391 and 394 which have no scale in the protocol)
-- LVRT/HVRT enable, voltage points, and times (482–492). Times are in **milliseconds**, voltages as **% of rated voltage**
+- Grid-support curves: P(U) (V-Watt), Q(U) (Volt-VAR), P(f) (Freq-Watt), Q(P) (Watt-VAR), PF(P) (Watt-PF) — registers 363–412, excluding reserved 394. Entity names follow inverter curve labels where practical; P(f) uses `P(f) Start/Stop Freq Over|Under` for Hz points, plus `P(f) Drop …` and `P(f) Start/Stop Delay …`. Scales follow the inverter screen, not the incorrect 0.1% / %Prated/min notes in V105.4 for 384–385 and 390.
+- LVRT/HVRT enable, voltage points, and times (482–492). Times are in **seconds** (register stores milliseconds), voltages as **% of rated voltage**
 
-Incorrect community mappings that treat 381–399 as HV2/LV3 ride-through (or 184 as over-voltage) are **not** used. Those addresses are Volt-VAR / Freq-Watt / Grid Type in V105.4.
+Incorrect community mappings that treat 381–399 as HV2/LV3 ride-through (or 184 as over-voltage) are **not** used. Those addresses are Q(U) / P(f) / Grid Type in V105.4.
 
 See [Configuration](CONFIGURATION.md) for how to enable the package.
 

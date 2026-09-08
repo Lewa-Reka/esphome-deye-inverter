@@ -44,9 +44,11 @@ packages:
     files: pv_inverter/packages/deye_hybrid_3p/grid_settings.yaml
 ```
 
-In Home Assistant you get a device named `{friendly_name} Grid Settings`. Values are read continuously. Changing them writes to the inverter **only** when **Allow Changes (DANGEROUS)** is on. After reboot or OTA that switch is off again.
+In Home Assistant you get a device named `{friendly_name} Grid Settings`. Values are read continuously from the inverter. Changing them writes to the inverter **only** when **Allow Changes (AT YOUR OWN RISK)** is on. If that switch is off, Home Assistant may briefly show the value you entered, then reverts (~0.5 s) to the last reading from the inverter. After reboot or OTA the lock switch is off again.
 
 Wrong values can disconnect the inverter from the grid or violate the local grid code. Do not copy register maps that use 184 or 381–399 as simple U/f protection — those addresses mean something else in V105.4.
+
+Grid-support curve entities use inverter labels: **P(U)**, **Q(U)**, **P(f)**, **Q(P)**, **PF(P)**. P(f) Hz points use names such as `P(f) Start Freq Over`; drop and delay omit `Freq` (`P(f) Drop Under`, `P(f) Start Delay Over`). Frequency points are 0.01 Hz.
 
 ### Default Hardware Configuration
 
