@@ -67,12 +67,12 @@ uart:
 modbus:
   id: modbus_1
   uart_id: modbus_uart
+  turnaround_time: 70ms
 
 modbus_controller:
   - id: ${modbus_controller_id}
     address: ${modbus_inverter_address}
     modbus_id: modbus_1
-    setup_priority: -10
+    setup_priority: -100
     update_interval: ${update_interval}
-    command_throttle: 60ms
     offline_skip_updates: 3
