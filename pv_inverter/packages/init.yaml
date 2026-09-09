@@ -26,6 +26,8 @@ esphome:
   devices:
     - id: esp_board
       name: ${friendly_name} ESP Board
+    - id: config_device
+      name: ${friendly_name} Config
 
 logger:
   level: WARN

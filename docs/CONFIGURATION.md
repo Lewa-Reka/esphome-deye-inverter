@@ -18,6 +18,8 @@ Requires **ESPHome 2026.8.0** or newer.
 
 ### Inverter Configuration
 
+Safe mode defaults are exposed in Home Assistant on the **Config** sub-device (`{friendly_name} Config`), separate from the ESP board diagnostics.
+
 | Parameter | Description | Default | Required | Supported Inverters |
 |-----------|-------------|---------|----------|---------------------|
 | `safe_mode_delay` | Delay before activating safe mode when disconnected | `600s` | No | All (1P/3P) |
