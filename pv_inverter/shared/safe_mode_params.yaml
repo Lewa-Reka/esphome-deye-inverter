@@ -15,7 +15,7 @@
 number:
   - platform: template
     name: "Safe Mode Max Battery Charge Current"
-    device_id: config_device
+    device_id: esp_board
     id: safe_mode_max_battery_charge_current
     icon: mdi:battery-charging-high
     entity_category: config
@@ -29,7 +29,7 @@ number:
 
   - platform: template
     name: "Safe Mode Max Sell Power"
-    device_id: config_device
+    device_id: esp_board
     id: safe_mode_max_sell_power
     icon: mdi:transmission-tower-export
     entity_category: config
@@ -44,7 +44,7 @@ number:
 select:
   - platform: template
     name: "Safe Mode System Work Mode"
-    device_id: config_device
+    device_id: esp_board
     id: safe_mode_system_work_mode
     icon: mdi:cog
     entity_category: config
@@ -58,7 +58,7 @@ select:
 
   - platform: template
     name: "Safe Mode Solar Sell"
-    device_id: config_device
+    device_id: esp_board
     id: safe_mode_solar_sell
     icon: mdi:toggle-switch
     entity_category: config
@@ -71,7 +71,7 @@ select:
 
   - platform: template
     name: "Safe Mode Force Off Grid"
-    device_id: config_device
+    device_id: esp_board
     id: safe_mode_force_off_grid
     icon: mdi:transmission-tower-off
     entity_category: config
