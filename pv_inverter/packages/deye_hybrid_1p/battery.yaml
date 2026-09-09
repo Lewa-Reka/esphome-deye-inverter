@@ -135,7 +135,7 @@ sensor:
     device_class: current
     accuracy_decimals: 2
     filters:
-      - multiply: 0.01
+      - multiply: 0.1
     value_type: S_WORD
     icon: "mdi:current-dc"
 
