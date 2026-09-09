@@ -19,9 +19,10 @@ esphome:
   name: "${name}"
   friendly_name: "${friendly_name}"
   comment: "${device_description} by Lewa-Reka https://github.com/Lewa-Reka/esphome-deye-inverter"
+  min_version: "2026.8.0"
   project:
     name: "lewa-reka.deye-inverter"
-    version: "0.14.0"
+    version: "0.15.0-rc"
   devices:
     - id: esp_board
       name: ${friendly_name} ESP Board

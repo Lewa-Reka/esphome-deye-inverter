@@ -2,6 +2,8 @@
 
 ## 🔧 Configuration Options
 
+Requires **ESPHome 2026.8.0** or newer.
+
 ### Main Configuration (`pv-inverter.yaml`)
 
 | Parameter | Description | Default | Required |

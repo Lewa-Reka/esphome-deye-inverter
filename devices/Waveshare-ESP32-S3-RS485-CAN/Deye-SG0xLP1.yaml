@@ -37,7 +37,7 @@ packages:
 esphome:
   name: deye-inverter
   friendly_name: Deye Inverter
-  min_version: "2025.6.0"
+  min_version: "2026.8.0"
   name_add_mac_suffix: true
 
 uart:
