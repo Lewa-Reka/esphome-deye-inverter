@@ -2,6 +2,8 @@
 
 ## 🔧 Configuration Options
 
+Requires **ESPHome 2026.8.0** or newer.
+
 ### Main Configuration (`pv-inverter.yaml`)
 
 | Parameter | Description | Default | Required |
@@ -15,6 +17,8 @@
 | `update_interval` | How often sensor values are updated from inverter | 5s | No |
 
 ### Inverter Configuration
+
+Safe mode defaults are exposed in Home Assistant on the **Config** sub-device (`{friendly_name} Config`), separate from the ESP board diagnostics.
 
 | Parameter | Description | Default | Required | Supported Inverters |
 |-----------|-------------|---------|----------|---------------------|

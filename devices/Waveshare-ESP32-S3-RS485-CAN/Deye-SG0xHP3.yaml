@@ -14,7 +14,7 @@
 
 substitutions:
   api_key: ""
-  ota_password: " "
+  ota_password: ""
   fallback_password: ""
   wifi_ssid: ""
   wifi_password: ""
@@ -38,7 +38,9 @@ packages:
     files: pv_inverter/deye_hybrid_3p_hv.yaml
 
 esphome:
-  min_version: "2025.6.0"
+  name: deye-inverter
+  friendly_name: Deye Inverter
+  min_version: "2026.8.0"
   name_add_mac_suffix: true
 
 uart:
@@ -53,5 +55,7 @@ logger:
 
 esp32:
   variant: esp32s3
+  flash_size: 16MB
+  cpu_frequency: 240MHz
   framework:
     type: esp-idf

@@ -1,0 +1,68 @@
+debug:
+  update_interval: 60s
+
+sensor:
+  - platform: wifi_signal
+    name: WiFi Signal
+    device_id: esp_board
+    id: esp_wifi_signal
+    icon: mdi:wifi
+    update_interval: 60s
+    entity_category: diagnostic
+  - platform: uptime
+    name: Uptime
+    device_id: esp_board
+    id: esp_uptime
+    type: seconds
+    icon: mdi:timer-check
+    update_interval: 60s
+    entity_category: diagnostic
+  - platform: debug
+    free:
+      name: Heap Free
+      device_id: esp_board
+      id: esp_heap_free
+      icon: mdi:memory
+      entity_category: diagnostic
+    block:
+      name: Heap Max Block
+      device_id: esp_board
+      id: esp_heap_max_block
+      icon: mdi:memory
+      entity_category: diagnostic
+    loop_time:
+      name: Loop Time
+      device_id: esp_board
+      id: esp_loop_time
+      icon: mdi:reload
+      entity_category: diagnostic
+    cpu_frequency:
+      name: CPU Frequency
+      device_id: esp_board
+      id: esp_cpu_frequency
+      icon: mdi:cpu-32-bit
+      unit_of_measurement: "MHz"
+      filters:
+        - multiply: 0.000001
+      entity_category: diagnostic
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: IP Address
+      device_id: esp_board
+      id: esp_ip_address
+      icon: mdi:ip-network
+      entity_category: diagnostic
+    ssid:
+      name: WiFi SSID
+      device_id: esp_board
+      id: esp_wifi_ssid
+      icon: mdi:access-point
+      entity_category: diagnostic
+    mac_address:
+      name: Mac Address
+      device_id: esp_board
+      id: esp_mac_address
+      icon: mdi:expansion-card
+      entity_category: diagnostic

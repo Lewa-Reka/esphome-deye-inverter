@@ -97,6 +97,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Output L1 Power"
+    id: output_l1_power
     register_type: holding
     address: 633
     unit_of_measurement: "W"
@@ -109,6 +110,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Output L2 Power"
+    id: output_l2_power
     register_type: holding
     address: 634
     unit_of_measurement: "W"
@@ -121,6 +123,7 @@ sensor:
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Output L3 Power"
+    id: output_l3_power
     register_type: holding
     address: 635
     unit_of_measurement: "W"
