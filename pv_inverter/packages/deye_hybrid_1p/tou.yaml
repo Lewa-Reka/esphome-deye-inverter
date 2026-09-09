@@ -100,6 +100,7 @@ switch:
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 1 Charge Enable"
     id: switch_time_point_1_charge_enable
+    restore_mode: DISABLED
     register_type: holding
     address: 274
     bitmask: 1
@@ -110,6 +111,7 @@ switch:
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 2 Charge Enable"
     id: switch_time_point_2_charge_enable
+    restore_mode: DISABLED
     register_type: holding
     address: 275
     bitmask: 1
@@ -120,6 +122,7 @@ switch:
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 3 Charge Enable"
     id: switch_time_point_3_charge_enable
+    restore_mode: DISABLED
     register_type: holding
     address: 276
     bitmask: 1
@@ -130,6 +133,7 @@ switch:
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 4 Charge Enable"
     id: switch_time_point_4_charge_enable
+    restore_mode: DISABLED
     register_type: holding
     address: 277
     bitmask: 1
@@ -140,6 +144,7 @@ switch:
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 5 Charge Enable"
     id: switch_time_point_5_charge_enable
+    restore_mode: DISABLED
     register_type: holding
     address: 278
     bitmask: 1
@@ -150,10 +155,85 @@ switch:
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 6 Charge Enable"
     id: switch_time_point_6_charge_enable
+    restore_mode: DISABLED
     register_type: holding
     address: 279
     bitmask: 1
     icon: "mdi:battery-plus"
+
+  # Sell Mode = undocumented bit 6 (0x40) of the per-slot control registers 274-279.
+  # Native modbus_controller bitmask switch. Writing a bitmask switch blind-writes
+  # (state ? bitmask : 0), so toggling Sell clears the other bits (incl. grid-charge
+  # bit0) and vice-versa -> buy and sell are mutually exclusive per slot.
+  # restore_mode: DISABLED is REQUIRED here (and on the Charge Enable switches above):
+  # a modbus switch otherwise writes its restored state on boot, and because the write
+  # clobbers the whole register that boot-write would wipe grid-charge/sell on every
+  # flash. DISABLED = read-only on boot, write only on user toggle.
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 1 Sell Mode"
+    id: switch_time_point_1_sell_mode
+    restore_mode: DISABLED
+    register_type: holding
+    address: 274
+    bitmask: 64
+    icon: "mdi:transmission-tower-export"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 2 Sell Mode"
+    id: switch_time_point_2_sell_mode
+    restore_mode: DISABLED
+    register_type: holding
+    address: 275
+    bitmask: 64
+    icon: "mdi:transmission-tower-export"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 3 Sell Mode"
+    id: switch_time_point_3_sell_mode
+    restore_mode: DISABLED
+    register_type: holding
+    address: 276
+    bitmask: 64
+    icon: "mdi:transmission-tower-export"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 4 Sell Mode"
+    id: switch_time_point_4_sell_mode
+    restore_mode: DISABLED
+    register_type: holding
+    address: 277
+    bitmask: 64
+    icon: "mdi:transmission-tower-export"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 5 Sell Mode"
+    id: switch_time_point_5_sell_mode
+    restore_mode: DISABLED
+    register_type: holding
+    address: 278
+    bitmask: 64
+    icon: "mdi:transmission-tower-export"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 6 Sell Mode"
+    id: switch_time_point_6_sell_mode
+    restore_mode: DISABLED
+    register_type: holding
+    address: 279
+    bitmask: 64
+    icon: "mdi:transmission-tower-export"
 
   - platform: template
     name: "Time of Use All Charge Enable"

@@ -30,6 +30,7 @@ substitutions:
 
 packages:
   pv_inverter: !include pv_inverter/deye_hybrid_3p_hv.yaml
+  grid_settings: !include pv_inverter/packages/deye_hybrid_3p/grid_settings.yaml
 
 esp32:
   board: esp32dev

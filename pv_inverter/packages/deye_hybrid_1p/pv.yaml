@@ -20,6 +20,7 @@ sensor:
     address: 186
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: U_WORD
     icon: "mdi:solar-power-variant"
@@ -32,6 +33,7 @@ sensor:
     address: 187
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: U_WORD
     icon: "mdi:solar-power-variant"
@@ -44,6 +46,7 @@ sensor:
     address: 188
     unit_of_measurement: "W"
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     value_type: U_WORD
     icon: "mdi:solar-power-variant"
@@ -54,11 +57,10 @@ sensor:
     id: pv4_power
     register_type: holding
     address: 189
-    unit_of_measurement: "V"
-    device_class: voltage
-    accuracy_decimals: 1
-    filters:
-      - multiply: 0.1
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: "measurement"
+    accuracy_decimals: 0
     value_type: U_WORD
     icon: "mdi:solar-power-variant"
 
@@ -67,6 +69,7 @@ sensor:
     unit_of_measurement: "W"
     id: pv_power
     device_class: power
+    state_class: "measurement"
     accuracy_decimals: 0
     update_interval: 5s
     icon: "mdi:solar-power-variant"

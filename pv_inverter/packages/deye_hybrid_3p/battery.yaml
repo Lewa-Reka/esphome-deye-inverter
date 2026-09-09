@@ -217,6 +217,8 @@ sensor:
     register_type: holding
     address: 214
     unit_of_measurement: "%"
+    device_class: battery
+    state_class: measurement
     accuracy_decimals: 0
     value_type: U_WORD
     icon: "mdi:battery"

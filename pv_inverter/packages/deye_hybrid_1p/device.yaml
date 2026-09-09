@@ -176,6 +176,126 @@ text_sensor:
 
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
+    name: "Device Protocol Version"
+    register_type: holding
+    address: 2
+    bitmask: 0
+    raw_encode: NONE
+    icon: "mdi:protocol"
+    entity_category: diagnostic
+    lambda: |-
+      if (x.size() < 2) return std::string("N/A");
+      uint16_t value = ((uint16_t)(uint8_t)x[0] << 8) | (uint8_t)x[1];
+      char buffer[10];
+      snprintf(buffer, sizeof(buffer), "%04X", value);
+      return std::string(buffer);
+
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Device Chip Type"
+    register_type: holding
+    address: 9
+    bitmask: 0
+    raw_encode: NONE
+    icon: "mdi:chip"
+    entity_category: diagnostic
+    lambda: |-
+      if (x.size() < 2) return std::string("N/A");
+      uint16_t value = ((uint16_t)(uint8_t)x[0] << 8) | (uint8_t)x[1];
+      switch (value & 0x0F) {
+        case 1: return std::string("AT32F403A");
+        case 2: return std::string("SXX32F103");
+        case 3: return std::string("GD32F103");
+        case 4: return std::string("GD32F303");
+        default: {
+          char buffer[20];
+          snprintf(buffer, sizeof(buffer), "Unknown (%04X)", value);
+          return std::string(buffer);
+        }
+      }
+
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Device Comm Board Firmware Field 2"
+    register_type: holding
+    address: 10
+    bitmask: 0
+    raw_encode: NONE
+    icon: "mdi:chip"
+    entity_category: diagnostic
+    lambda: |-
+      if (x.size() < 2) return std::string("N/A");
+      uint16_t value = ((uint16_t)(uint8_t)x[0] << 8) | (uint8_t)x[1];
+      char buffer[10];
+      snprintf(buffer, sizeof(buffer), "%04X", value);
+      return std::string(buffer);
+
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Device Control Board Aux Version"
+    register_type: holding
+    address: 11
+    bitmask: 0
+    raw_encode: NONE
+    icon: "mdi:chip"
+    entity_category: diagnostic
+    lambda: |-
+      if (x.size() < 2) return std::string("N/A");
+      uint16_t value = ((uint16_t)(uint8_t)x[0] << 8) | (uint8_t)x[1];
+      char buffer[10];
+      snprintf(buffer, sizeof(buffer), "%04X", value);
+      return std::string(buffer);
+
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Device Control Board Firmware Field 2"
+    register_type: holding
+    address: 12
+    bitmask: 0
+    raw_encode: NONE
+    icon: "mdi:chip"
+    entity_category: diagnostic
+    lambda: |-
+      if (x.size() < 2) return std::string("N/A");
+      uint16_t value = ((uint16_t)(uint8_t)x[0] << 8) | (uint8_t)x[1];
+      char buffer[10];
+      snprintf(buffer, sizeof(buffer), "%04X", value);
+      return std::string(buffer);
+
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Device Control Board Firmware Version"
+    register_type: holding
+    address: 13
+    bitmask: 0
+    raw_encode: NONE
+    icon: "mdi:chip"
+    entity_category: diagnostic
+    lambda: |-
+      if (x.size() < 2) return std::string("N/A");
+      uint16_t value = ((uint16_t)(uint8_t)x[0] << 8) | (uint8_t)x[1];
+      char buffer[10];
+      snprintf(buffer, sizeof(buffer), "%04X", value);
+      return std::string(buffer);
+
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Device Comm Board Firmware Version"
+    register_type: holding
+    address: 14
+    bitmask: 0
+    raw_encode: NONE
+    icon: "mdi:chip"
+    entity_category: diagnostic
+    lambda: |-
+      if (x.size() < 2) return std::string("N/A");
+      uint16_t value = ((uint16_t)(uint8_t)x[0] << 8) | (uint8_t)x[1];
+      char buffer[10];
+      snprintf(buffer, sizeof(buffer), "%04X", value);
+      return std::string(buffer);
+
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
     name: "Device Alarm"
     register_type: holding
     entity_category: diagnostic
