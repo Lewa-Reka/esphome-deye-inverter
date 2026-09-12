@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+substitutions:
+  # Register 54 = "AC power ratio". Only scale when it reads a known 10W/LSB
+  # value; pass raw watts through otherwise (covers 1, 0/unsupported and the
+  # not-yet-read NaN state).
+  func_scale_ac_power: "return (id(ac_power_ratio).state == 10.0f) ? x * 10.0f : x;"
+
 globals:
   - id: last_total_energy_bought
     type: float
@@ -21,11 +27,29 @@ globals:
     restore_value: yes
 
 sensor:
+  # Register 54 = "AC power ratio". Per the V119 protocol, the AC power registers
+  # 167-169, 170-172 and 176-178 are reported in units of this value (1W or 10W
+  # per LSB). Verified on hardware: SG02 10kW reads 10 (10W units), SG04 6kW
+  # reads 0 (1W units) - so only a value of 10 triggers scaling.
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
+    name: "AC Power Ratio"
+    id: ac_power_ratio
+    register_type: holding
+    address: 54
+    value_type: U_WORD
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    icon: "mdi:multiplication"
+    internal: true
+
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Grid L1 Power"
     register_type: holding
     address: 167
+    filters:
+      - lambda: ${func_scale_ac_power}
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
@@ -38,6 +62,8 @@ sensor:
     name: "Grid L2 Power"
     register_type: holding
     address: 168
+    filters:
+      - lambda: ${func_scale_ac_power}
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
@@ -50,6 +76,8 @@ sensor:
     name: "Grid Power"
     register_type: holding
     address: 169
+    filters:
+      - lambda: ${func_scale_ac_power}
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
@@ -208,6 +236,8 @@ sensor:
     name: "External CT L1 Power"
     register_type: holding
     address: 170
+    filters:
+      - lambda: ${func_scale_ac_power}
     unit_of_measurement: "W"
     device_class: power
     accuracy_decimals: 0
@@ -219,6 +249,8 @@ sensor:
     name: "External CT L2 Power"
     register_type: holding
     address: 171
+    filters:
+      - lambda: ${func_scale_ac_power}
     unit_of_measurement: "W"
     device_class: power
     accuracy_decimals: 0
@@ -230,6 +262,8 @@ sensor:
     name: "External CT Power"
     register_type: holding
     address: 172
+    filters:
+      - lambda: ${func_scale_ac_power}
     unit_of_measurement: "W"
     device_class: power
     accuracy_decimals: 0
