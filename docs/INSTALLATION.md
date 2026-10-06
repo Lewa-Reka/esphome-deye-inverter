@@ -53,7 +53,6 @@ This is the easiest way to get started if you're using Home Assistant.
    wifi_ssid: "YourWiFiSSID"
    wifi_password: "YourWiFiPassword"
    pv_inverter_api_key: "your-32-character-api-key"
-   pv_inverter_ota_password: "your-ota-password"
    pv_inverter_fallback_password: "your-fallback-password"
    ```
 2. Click **"EDIT"** on your newly created device
@@ -92,7 +91,6 @@ If you prefer using command line or don't have Home Assistant:
    wifi_ssid: "YourWiFiSSID"
    wifi_password: "YourWiFiPassword"
    pv_inverter_api_key: "your-32-character-api-key"
-   pv_inverter_ota_password: "your-ota-password"
    pv_inverter_fallback_password: "your-fallback-password"
    ```
 

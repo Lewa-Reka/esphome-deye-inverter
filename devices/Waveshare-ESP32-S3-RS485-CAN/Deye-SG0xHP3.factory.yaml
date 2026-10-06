@@ -5,7 +5,7 @@ ota:
   - platform: http_request
     id: ota_http_request
   - id: !extend ota_esphome
-    password: !remove
+    encryption: !remove
 
 improv_serial:
 

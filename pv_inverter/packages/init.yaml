@@ -19,7 +19,7 @@ esphome:
   name: "${name}"
   friendly_name: "${friendly_name}"
   comment: "${device_description} by Lewa-Reka https://github.com/Lewa-Reka/esphome-deye-inverter"
-  min_version: "2026.8.0"
+  min_version: "2026.9.0"
   project:
     name: "lewa-reka.deye-inverter"
     version: "0.15.0-rc"
@@ -48,7 +48,7 @@ api:
 ota:
   - platform: esphome
     id: ota_esphome
-    password: ${ota_password}
+    encryption: # reuses the api encryption key
 
 wifi:
   ssid: ${wifi_ssid}
