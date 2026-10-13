@@ -1,0 +1,177 @@
+select:
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: remote_mode
+    name: "Remote mode"
+    address: 1100
+    value_type: U_WORD
+    optionsmap:
+        "Disable": 0
+        "Enable remote mode 1": 1
+        "Enable remote mode 2": 2
+        "Enable remote mode 3": 3
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: inverter_output_power_control_mode
+    name: "Inverter output power control mode"
+    address: 1104
+    value_type: U_WORD
+    optionsmap:
+        "Enable AC side control mode": 0
+        "Enable battery side control mode": 1
+        "Enable grid side control mode": 2
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: battery_side_control
+    name: "Battery side control"
+    address: 1105
+    value_type: U_WORD
+    optionsmap:
+        "Power": 2
+        "SOC": 3
+        "Voltage+Current": 4
+        "Power+SOC": 5
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: ac_power_control_mode
+    name: "AC power control mode"
+    address: 1106
+    value_type: U_WORD
+    optionsmap:
+        "3 phase together": 0
+        "Each phase independent": 1
+
+number:
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: remote_mode_watchdog_time
+    name: "Remote mode watchdog time"
+    min_value: 10
+    step: 1
+    address: 1101
+    value_type: U_WORD
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: battery_constant_voltage_mode
+    name: "Battery constant voltage mode"
+    min_value: 0
+    max_value: 1000
+    step: 0.1
+    unit_of_measurement: "V"
+    multiply: 10
+    address: 1107
+    value_type: U_WORD
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: battery_constant_current_mode
+    name: "Battery constant current mode"
+    min_value: 0
+    max_value: 200
+    step: 0.1
+    unit_of_measurement: "A"
+    multiply: 10
+    address: 1108
+    value_type: U_WORD
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: battery_constant_power_mode
+    name: "Battery constant power mode"
+    min_value: -120
+    max_value: 120
+    step: 0.1
+    unit_of_measurement: "%"
+    multiply: 10
+    address: 1109
+    value_type: S_WORD
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: battery_constant_soc_mode
+    name: "Battery constant SOC mode"
+    min_value: 0
+    max_value: 100
+    step: 0.1
+    unit_of_measurement: "%"
+    multiply: 10
+    address: 1110
+    value_type: U_WORD
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: inv_output_power_ABC
+    name: "Inverter output power phase ABC"
+    min_value: -120
+    max_value: 120
+    step: 0.1
+    unit_of_measurement: "%"
+    multiply: 10
+    address: 1111
+    value_type: S_WORD
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: inv_output_power_A
+    name: "Inverter output power phase A"
+    min_value: -120
+    max_value: 120
+    step: 0.1
+    unit_of_measurement: "%"
+    multiply: 10
+    address: 1112
+    value_type: S_WORD
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: inv_output_power_B
+    name: "Inverter output power phase B"
+    min_value: -120
+    max_value: 120
+    step: 0.1
+    unit_of_measurement: "%"
+    multiply: 10
+    address: 1113
+    value_type: S_WORD
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: inv_output_power_C
+    name: "Inverter output power phase C"
+    min_value: -120
+    max_value: 120
+    step: 0.1
+    unit_of_measurement: "%"
+    multiply: 10
+    address: 1114
+    value_type: S_WORD
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    id: remote_mode_max_solar_power
+    name: "Remote Mode max solar power"
+    min_value: 0
+    max_value: 200
+    step: 0.1
+    unit_of_measurement: "%"
+    multiply: 10
+    address: 1115
+    value_type: U_WORD
