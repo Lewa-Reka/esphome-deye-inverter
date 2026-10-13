@@ -161,6 +161,72 @@ switch:
     bitmask: 1
     icon: "mdi:battery-plus"
 
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 1 Gen Charge"
+    id: switch_time_point_1_gen_charge
+    restore_mode: DISABLED
+    register_type: holding
+    address: 274
+    bitmask: 2
+    icon: "mdi:generator-stationary"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 2 Gen Charge"
+    id: switch_time_point_2_gen_charge
+    restore_mode: DISABLED
+    register_type: holding
+    address: 275
+    bitmask: 2
+    icon: "mdi:generator-stationary"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 3 Gen Charge"
+    id: switch_time_point_3_gen_charge
+    restore_mode: DISABLED
+    register_type: holding
+    address: 276
+    bitmask: 2
+    icon: "mdi:generator-stationary"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 4 Gen Charge"
+    id: switch_time_point_4_gen_charge
+    restore_mode: DISABLED
+    register_type: holding
+    address: 277
+    bitmask: 2
+    icon: "mdi:generator-stationary"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 5 Gen Charge"
+    id: switch_time_point_5_gen_charge
+    restore_mode: DISABLED
+    register_type: holding
+    address: 278
+    bitmask: 2
+    icon: "mdi:generator-stationary"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 6 Gen Charge"
+    id: switch_time_point_6_gen_charge
+    restore_mode: DISABLED
+    register_type: holding
+    address: 279
+    bitmask: 2
+    icon: "mdi:generator-stationary"
+
   # Sell Mode = undocumented bit 6 (0x40) of the per-slot control registers 274-279.
   # Native modbus_controller bitmask switch. Writing a bitmask switch blind-writes
   # (state ? bitmask : 0), so toggling Sell clears the other bits (incl. grid-charge
@@ -531,6 +597,28 @@ number:
     value_type: U_WORD
     mode: box
     icon: "mdi:battery-clock"
+    lambda: "return (int)x & 0x00FF;"
+    write_lambda: |-
+      uint16_t gen = (uint16_t)id(time_of_use_1_gen_soc).state;
+      return (gen << 8) | ((uint8_t)x);
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 1 Gen SoC"
+    id: time_of_use_1_gen_soc
+    unit_of_measurement: "%"
+    address: 268
+    min_value: 0
+    max_value: 100
+    step: 1
+    value_type: U_WORD
+    mode: box
+    icon: "mdi:generator-stationary"
+    lambda: "return ((int)x >> 8) & 0x00FF;"
+    write_lambda: |-
+      uint16_t batt = (uint16_t)id(time_of_use_1_soc).state;
+      return (((uint8_t)x) << 8) | (batt & 0x00FF);
 
   - platform: modbus_controller
     use_write_multiple: true
@@ -545,6 +633,28 @@ number:
     value_type: U_WORD
     mode: box
     icon: "mdi:battery-clock"
+    lambda: "return (int)x & 0x00FF;"
+    write_lambda: |-
+      uint16_t gen = (uint16_t)id(time_of_use_2_gen_soc).state;
+      return (gen << 8) | ((uint8_t)x);
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 2 Gen SoC"
+    id: time_of_use_2_gen_soc
+    unit_of_measurement: "%"
+    address: 269
+    min_value: 0
+    max_value: 100
+    step: 1
+    value_type: U_WORD
+    mode: box
+    icon: "mdi:generator-stationary"
+    lambda: "return ((int)x >> 8) & 0x00FF;"
+    write_lambda: |-
+      uint16_t batt = (uint16_t)id(time_of_use_2_soc).state;
+      return (((uint8_t)x) << 8) | (batt & 0x00FF);
 
   - platform: modbus_controller
     use_write_multiple: true
@@ -559,6 +669,28 @@ number:
     value_type: U_WORD
     mode: box
     icon: "mdi:battery-clock"
+    lambda: "return (int)x & 0x00FF;"
+    write_lambda: |-
+      uint16_t gen = (uint16_t)id(time_of_use_3_gen_soc).state;
+      return (gen << 8) | ((uint8_t)x);
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 3 Gen SoC"
+    id: time_of_use_3_gen_soc
+    unit_of_measurement: "%"
+    address: 270
+    min_value: 0
+    max_value: 100
+    step: 1
+    value_type: U_WORD
+    mode: box
+    icon: "mdi:generator-stationary"
+    lambda: "return ((int)x >> 8) & 0x00FF;"
+    write_lambda: |-
+      uint16_t batt = (uint16_t)id(time_of_use_3_soc).state;
+      return (((uint8_t)x) << 8) | (batt & 0x00FF);
 
   - platform: modbus_controller
     use_write_multiple: true
@@ -573,6 +705,28 @@ number:
     value_type: U_WORD
     mode: box
     icon: "mdi:battery-clock"
+    lambda: "return (int)x & 0x00FF;"
+    write_lambda: |-
+      uint16_t gen = (uint16_t)id(time_of_use_4_gen_soc).state;
+      return (gen << 8) | ((uint8_t)x);
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 4 Gen SoC"
+    id: time_of_use_4_gen_soc
+    unit_of_measurement: "%"
+    address: 271
+    min_value: 0
+    max_value: 100
+    step: 1
+    value_type: U_WORD
+    mode: box
+    icon: "mdi:generator-stationary"
+    lambda: "return ((int)x >> 8) & 0x00FF;"
+    write_lambda: |-
+      uint16_t batt = (uint16_t)id(time_of_use_4_soc).state;
+      return (((uint8_t)x) << 8) | (batt & 0x00FF);
 
   - platform: modbus_controller
     use_write_multiple: true
@@ -587,6 +741,28 @@ number:
     value_type: U_WORD
     mode: box
     icon: "mdi:battery-clock"
+    lambda: "return (int)x & 0x00FF;"
+    write_lambda: |-
+      uint16_t gen = (uint16_t)id(time_of_use_5_gen_soc).state;
+      return (gen << 8) | ((uint8_t)x);
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 5 Gen SoC"
+    id: time_of_use_5_gen_soc
+    unit_of_measurement: "%"
+    address: 272
+    min_value: 0
+    max_value: 100
+    step: 1
+    value_type: U_WORD
+    mode: box
+    icon: "mdi:generator-stationary"
+    lambda: "return ((int)x >> 8) & 0x00FF;"
+    write_lambda: |-
+      uint16_t batt = (uint16_t)id(time_of_use_5_soc).state;
+      return (((uint8_t)x) << 8) | (batt & 0x00FF);
 
   - platform: modbus_controller
     use_write_multiple: true
@@ -601,6 +777,28 @@ number:
     value_type: U_WORD
     mode: box
     icon: "mdi:battery-clock"
+    lambda: "return (int)x & 0x00FF;"
+    write_lambda: |-
+      uint16_t gen = (uint16_t)id(time_of_use_6_gen_soc).state;
+      return (gen << 8) | ((uint8_t)x);
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 6 Gen SoC"
+    id: time_of_use_6_gen_soc
+    unit_of_measurement: "%"
+    address: 273
+    min_value: 0
+    max_value: 100
+    step: 1
+    value_type: U_WORD
+    mode: box
+    icon: "mdi:generator-stationary"
+    lambda: "return ((int)x >> 8) & 0x00FF;"
+    write_lambda: |-
+      uint16_t batt = (uint16_t)id(time_of_use_6_soc).state;
+      return (((uint8_t)x) << 8) | (batt & 0x00FF);
 
   - platform: template
     mode: box
