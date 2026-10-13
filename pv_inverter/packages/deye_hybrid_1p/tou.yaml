@@ -95,211 +95,299 @@ switch:
     bitmask: 1
     icon: "mdi:toggle-switch"
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
+  # --- Time of Use Slot 1 Controls (Register 274) ---
+  - platform: template
     name: "Time of Use 1 Charge Enable"
     id: switch_time_point_1_charge_enable
-    restore_mode: DISABLED
-    register_type: holding
-    address: 274
-    bitmask: 1
     icon: "mdi:battery-plus"
-
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
-    name: "Time of Use 2 Charge Enable"
-    id: switch_time_point_2_charge_enable
+    optimistic: true
     restore_mode: DISABLED
-    register_type: holding
-    address: 275
-    bitmask: 1
-    icon: "mdi:battery-plus"
+    lambda: "return ((int)id(time_of_use_1_raw).state & 0b00000001) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_1_raw
+          value: !lambda "return (int)id(time_of_use_1_raw).state | 0b00000001;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_1_raw
+          value: !lambda "return (int)id(time_of_use_1_raw).state & ~0b00000001;"
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
-    name: "Time of Use 3 Charge Enable"
-    id: switch_time_point_3_charge_enable
-    restore_mode: DISABLED
-    register_type: holding
-    address: 276
-    bitmask: 1
-    icon: "mdi:battery-plus"
-
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
-    name: "Time of Use 4 Charge Enable"
-    id: switch_time_point_4_charge_enable
-    restore_mode: DISABLED
-    register_type: holding
-    address: 277
-    bitmask: 1
-    icon: "mdi:battery-plus"
-
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
-    name: "Time of Use 5 Charge Enable"
-    id: switch_time_point_5_charge_enable
-    restore_mode: DISABLED
-    register_type: holding
-    address: 278
-    bitmask: 1
-    icon: "mdi:battery-plus"
-
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
-    name: "Time of Use 6 Charge Enable"
-    id: switch_time_point_6_charge_enable
-    restore_mode: DISABLED
-    register_type: holding
-    address: 279
-    bitmask: 1
-    icon: "mdi:battery-plus"
-
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
+  - platform: template
     name: "Time of Use 1 Gen Charge"
     id: switch_time_point_1_gen_charge
-    restore_mode: DISABLED
-    register_type: holding
-    address: 274
-    bitmask: 2
     icon: "mdi:generator-stationary"
-
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
-    name: "Time of Use 2 Gen Charge"
-    id: switch_time_point_2_gen_charge
+    optimistic: true
     restore_mode: DISABLED
-    register_type: holding
-    address: 275
-    bitmask: 2
-    icon: "mdi:generator-stationary"
+    lambda: "return ((int)id(time_of_use_1_raw).state & 0b00000010) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_1_raw
+          value: !lambda "return (int)id(time_of_use_1_raw).state | 0b00000010;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_1_raw
+          value: !lambda "return (int)id(time_of_use_1_raw).state & ~0b00000010;"
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
-    name: "Time of Use 3 Gen Charge"
-    id: switch_time_point_3_gen_charge
-    restore_mode: DISABLED
-    register_type: holding
-    address: 276
-    bitmask: 2
-    icon: "mdi:generator-stationary"
-
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
-    name: "Time of Use 4 Gen Charge"
-    id: switch_time_point_4_gen_charge
-    restore_mode: DISABLED
-    register_type: holding
-    address: 277
-    bitmask: 2
-    icon: "mdi:generator-stationary"
-
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
-    name: "Time of Use 5 Gen Charge"
-    id: switch_time_point_5_gen_charge
-    restore_mode: DISABLED
-    register_type: holding
-    address: 278
-    bitmask: 2
-    icon: "mdi:generator-stationary"
-
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
-    name: "Time of Use 6 Gen Charge"
-    id: switch_time_point_6_gen_charge
-    restore_mode: DISABLED
-    register_type: holding
-    address: 279
-    bitmask: 2
-    icon: "mdi:generator-stationary"
-
-  # Sell Mode = undocumented bit 6 (0x40) of the per-slot control registers 274-279.
-  # Native modbus_controller bitmask switch. Writing a bitmask switch blind-writes
-  # (state ? bitmask : 0), so toggling Sell clears the other bits (incl. grid-charge
-  # bit0) and vice-versa -> buy and sell are mutually exclusive per slot.
-  # restore_mode: DISABLED is REQUIRED here (and on the Charge Enable switches above):
-  # a modbus switch otherwise writes its restored state on boot, and because the write
-  # clobbers the whole register that boot-write would wipe grid-charge/sell on every
-  # flash. DISABLED = read-only on boot, write only on user toggle.
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
+  - platform: template
     name: "Time of Use 1 Sell Mode"
     id: switch_time_point_1_sell_mode
-    restore_mode: DISABLED
-    register_type: holding
-    address: 274
-    bitmask: 64
     icon: "mdi:transmission-tower-export"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_1_raw).state & 0b01000000) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_1_raw
+          value: !lambda "return (int)id(time_of_use_1_raw).state | 0b01000000;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_1_raw
+          value: !lambda "return (int)id(time_of_use_1_raw).state & ~0b01000000;"
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
+  # --- Time of Use Slot 2 Controls (Register 275) ---
+  - platform: template
+    name: "Time of Use 2 Charge Enable"
+    id: switch_time_point_2_charge_enable
+    icon: "mdi:battery-plus"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_2_raw).state & 0b00000001) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_2_raw
+          value: !lambda "return (int)id(time_of_use_2_raw).state | 0b00000001;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_2_raw
+          value: !lambda "return (int)id(time_of_use_2_raw).state & ~0b00000001;"
+
+  - platform: template
+    name: "Time of Use 2 Gen Charge"
+    id: switch_time_point_2_gen_charge
+    icon: "mdi:generator-stationary"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_2_raw).state & 0b00000010) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_2_raw
+          value: !lambda "return (int)id(time_of_use_2_raw).state | 0b00000010;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_2_raw
+          value: !lambda "return (int)id(time_of_use_2_raw).state & ~0b00000010;"
+
+  - platform: template
     name: "Time of Use 2 Sell Mode"
     id: switch_time_point_2_sell_mode
-    restore_mode: DISABLED
-    register_type: holding
-    address: 275
-    bitmask: 64
     icon: "mdi:transmission-tower-export"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_2_raw).state & 0b01000000) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_2_raw
+          value: !lambda "return (int)id(time_of_use_2_raw).state | 0b01000000;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_2_raw
+          value: !lambda "return (int)id(time_of_use_2_raw).state & ~0b01000000;"
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
+  # --- Time of Use Slot 3 Controls (Register 276) ---
+  - platform: template
+    name: "Time of Use 3 Charge Enable"
+    id: switch_time_point_3_charge_enable
+    icon: "mdi:battery-plus"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_3_raw).state & 0b00000001) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_3_raw
+          value: !lambda "return (int)id(time_of_use_3_raw).state | 0b00000001;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_3_raw
+          value: !lambda "return (int)id(time_of_use_3_raw).state & ~0b00000001;"
+
+  - platform: template
+    name: "Time of Use 3 Gen Charge"
+    id: switch_time_point_3_gen_charge
+    icon: "mdi:generator-stationary"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_3_raw).state & 0b00000010) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_3_raw
+          value: !lambda "return (int)id(time_of_use_3_raw).state | 0b00000010;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_3_raw
+          value: !lambda "return (int)id(time_of_use_3_raw).state & ~0b00000010;"
+
+  - platform: template
     name: "Time of Use 3 Sell Mode"
     id: switch_time_point_3_sell_mode
-    restore_mode: DISABLED
-    register_type: holding
-    address: 276
-    bitmask: 64
     icon: "mdi:transmission-tower-export"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_3_raw).state & 0b01000000) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_3_raw
+          value: !lambda "return (int)id(time_of_use_3_raw).state | 0b01000000;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_3_raw
+          value: !lambda "return (int)id(time_of_use_3_raw).state & ~0b01000000;"
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
+  # --- Time of Use Slot 4 Controls (Register 277) ---
+  - platform: template
+    name: "Time of Use 4 Charge Enable"
+    id: switch_time_point_4_charge_enable
+    icon: "mdi:battery-plus"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_4_raw).state & 0b00000001) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_4_raw
+          value: !lambda "return (int)id(time_of_use_4_raw).state | 0b00000001;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_4_raw
+          value: !lambda "return (int)id(time_of_use_4_raw).state & ~0b00000001;"
+
+  - platform: template
+    name: "Time of Use 4 Gen Charge"
+    id: switch_time_point_4_gen_charge
+    icon: "mdi:generator-stationary"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_4_raw).state & 0b00000010) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_4_raw
+          value: !lambda "return (int)id(time_of_use_4_raw).state | 0b00000010;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_4_raw
+          value: !lambda "return (int)id(time_of_use_4_raw).state & ~0b00000010;"
+
+  - platform: template
     name: "Time of Use 4 Sell Mode"
     id: switch_time_point_4_sell_mode
-    restore_mode: DISABLED
-    register_type: holding
-    address: 277
-    bitmask: 64
     icon: "mdi:transmission-tower-export"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_4_raw).state & 0b01000000) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_4_raw
+          value: !lambda "return (int)id(time_of_use_4_raw).state | 0b01000000;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_4_raw
+          value: !lambda "return (int)id(time_of_use_4_raw).state & ~0b01000000;"
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
+  # --- Time of Use Slot 5 Controls (Register 278) ---
+  - platform: template
+    name: "Time of Use 5 Charge Enable"
+    id: switch_time_point_5_charge_enable
+    icon: "mdi:battery-plus"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_5_raw).state & 0b00000001) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_5_raw
+          value: !lambda "return (int)id(time_of_use_5_raw).state | 0b00000001;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_5_raw
+          value: !lambda "return (int)id(time_of_use_5_raw).state & ~0b00000001;"
+
+  - platform: template
+    name: "Time of Use 5 Gen Charge"
+    id: switch_time_point_5_gen_charge
+    icon: "mdi:generator-stationary"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_5_raw).state & 0b00000010) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_5_raw
+          value: !lambda "return (int)id(time_of_use_5_raw).state | 0b00000010;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_5_raw
+          value: !lambda "return (int)id(time_of_use_5_raw).state & ~0b00000010;"
+
+  - platform: template
     name: "Time of Use 5 Sell Mode"
     id: switch_time_point_5_sell_mode
-    restore_mode: DISABLED
-    register_type: holding
-    address: 278
-    bitmask: 64
     icon: "mdi:transmission-tower-export"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_5_raw).state & 0b01000000) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_5_raw
+          value: !lambda "return (int)id(time_of_use_5_raw).state | 0b01000000;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_5_raw
+          value: !lambda "return (int)id(time_of_use_5_raw).state & ~0b01000000;"
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
+  # --- Time of Use Slot 6 Controls (Register 279) ---
+  - platform: template
+    name: "Time of Use 6 Charge Enable"
+    id: switch_time_point_6_charge_enable
+    icon: "mdi:battery-plus"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_6_raw).state & 0b00000001) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_6_raw
+          value: !lambda "return (int)id(time_of_use_6_raw).state | 0b00000001;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_6_raw
+          value: !lambda "return (int)id(time_of_use_6_raw).state & ~0b00000001;"
+
+  - platform: template
+    name: "Time of Use 6 Gen Charge"
+    id: switch_time_point_6_gen_charge
+    icon: "mdi:generator-stationary"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_6_raw).state & 0b00000010) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_6_raw
+          value: !lambda "return (int)id(time_of_use_6_raw).state | 0b00000010;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_6_raw
+          value: !lambda "return (int)id(time_of_use_6_raw).state & ~0b00000010;"
+
+  - platform: template
     name: "Time of Use 6 Sell Mode"
     id: switch_time_point_6_sell_mode
-    restore_mode: DISABLED
-    register_type: holding
-    address: 279
-    bitmask: 64
     icon: "mdi:transmission-tower-export"
+    optimistic: true
+    restore_mode: DISABLED
+    lambda: "return ((int)id(time_of_use_6_raw).state & 0b01000000) != 0;"
+    turn_on_action:
+      - number.set:
+          id: time_of_use_6_raw
+          value: !lambda "return (int)id(time_of_use_6_raw).state | 0b01000000;"
+    turn_off_action:
+      - number.set:
+          id: time_of_use_6_raw
+          value: !lambda "return (int)id(time_of_use_6_raw).state & ~0b01000000;"
 
   - platform: template
     name: "Time of Use All Charge Enable"
@@ -338,6 +426,84 @@ switch:
           id: switch_time_point_6_charge_enable
 
 number:
+  # --- Time of Use Raw Slot Control Words (Registers 274..279) ---
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 1 Raw"
+    id: time_of_use_1_raw
+    register_type: holding
+    address: 274
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    step: 1
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 2 Raw"
+    id: time_of_use_2_raw
+    register_type: holding
+    address: 275
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    step: 1
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 3 Raw"
+    id: time_of_use_3_raw
+    register_type: holding
+    address: 276
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    step: 1
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 4 Raw"
+    id: time_of_use_4_raw
+    register_type: holding
+    address: 277
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    step: 1
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 5 Raw"
+    id: time_of_use_5_raw
+    register_type: holding
+    address: 278
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    step: 1
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 6 Raw"
+    id: time_of_use_6_raw
+    register_type: holding
+    address: 279
+    value_type: U_WORD
+    min_value: 0
+    max_value: 65535
+    step: 1
+    internal: true
   - platform: modbus_controller
     use_write_multiple: true
     name: "Time of Use 1 Start Raw"
