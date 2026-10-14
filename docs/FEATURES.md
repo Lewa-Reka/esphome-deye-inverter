@@ -47,13 +47,6 @@ The system includes convenient "All" entities that allow you to control all Time
 - These entities are particularly useful for automations where you want to control all Time of Use windows simultaneously
 - The "All" entities read their current state from the first Time of Use window (e.g., "Time of Use 1 SoC")
 
-### Undocumented Time of Use Modes (1P, disabled by default)
-The 1P Modbus protocol (since V116) defines extra bits whose behaviour Deye does not document:
-- **Time of Use N GM Mode / BU Mode / CH Mode**: bits 2, 3 and 4 of the per-slot registers 274-279
-- **Time of Use Mode 3 (Spain)**: bit 8 of register 248, described as "work mode 3 (Spanish customer requirement)"
-
-They were added in the same protocol revision, so the GM/BU/CH modes probably belong to that Spain-specific work mode. The inverter stores the bits (the switches read back as enabled), but on EU firmware there is no matching setting on the inverter screen and no observed effect. These entities are **disabled by default**; enable them only if you know what your firmware does with them, and turn them off again if unsure.
-
 ## 🔒 Safety Features
 
 The system includes comprehensive safety mechanisms:
