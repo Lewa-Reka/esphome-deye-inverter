@@ -219,6 +219,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use Mode 3 (Spain)"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_tou_mode_3
     register_type: holding
     address: 248
@@ -266,6 +267,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 1 GM Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_1_gm_mode
     register_type: holding
     address: 274
@@ -280,6 +282,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 1 BU Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_1_bu_mode
     register_type: holding
     address: 274
@@ -294,6 +297,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 1 CH Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_1_ch_mode
     register_type: holding
     address: 274
@@ -340,6 +344,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 2 GM Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_2_gm_mode
     register_type: holding
     address: 275
@@ -354,6 +359,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 2 BU Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_2_bu_mode
     register_type: holding
     address: 275
@@ -368,6 +374,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 2 CH Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_2_ch_mode
     register_type: holding
     address: 275
@@ -415,6 +422,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 3 GM Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_3_gm_mode
     register_type: holding
     address: 276
@@ -429,6 +437,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 3 BU Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_3_bu_mode
     register_type: holding
     address: 276
@@ -443,6 +452,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 3 CH Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_3_ch_mode
     register_type: holding
     address: 276
@@ -490,6 +500,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 4 GM Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_4_gm_mode
     register_type: holding
     address: 277
@@ -504,6 +515,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 4 BU Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_4_bu_mode
     register_type: holding
     address: 277
@@ -518,6 +530,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 4 CH Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_4_ch_mode
     register_type: holding
     address: 277
@@ -565,6 +578,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 5 GM Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_5_gm_mode
     register_type: holding
     address: 278
@@ -579,6 +593,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 5 BU Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_5_bu_mode
     register_type: holding
     address: 278
@@ -593,6 +608,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 5 CH Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_5_ch_mode
     register_type: holding
     address: 278
@@ -639,6 +655,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 6 GM Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_6_gm_mode
     register_type: holding
     address: 279
@@ -653,6 +670,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 6 BU Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_6_bu_mode
     register_type: holding
     address: 279
@@ -667,6 +685,7 @@ switch:
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 6 CH Mode"
+    disabled_by_default: true # undocumented, see docs/FEATURES.md
     id: switch_time_point_6_ch_mode
     register_type: holding
     address: 279
