@@ -107,7 +107,7 @@ number:
     unit_of_measurement: "W"
     device_class: power
     value_type: U_WORD
-    min_value: 20
+    min_value: 10
     max_value: 500
     step: 1
     mode: box

@@ -38,7 +38,7 @@ The system includes convenient "All" entities that allow you to control all Time
 - **Time of Use All Out Power**: Set output power limit for all 6 windows at once  
 - **Time of Use All Voltage**: Set voltage threshold for all 6 windows at once
 - **Time of Use All Grid Charge**: Enable/disable grid charging for all 6 windows at once
-- **Time of Use All Gen (currently only 3P)**: Enable/disable generator charging for all 6 windows at once
+- **Time of Use All Gen Charge**: Enable/disable generator charging for all 6 windows at once
 - **Time of Use All Sell (currently only 3P and probably only working properly with HV)**: Enable/disable selling for all 6 windows at once
 
 **Important Notes:**

@@ -33,14 +33,19 @@ sensor:
     id: total_generator_production
     register_type: holding
     address: 92
+    value_type: U_QWORD # 4 registers (92-95), raw bytes are decoded in the lambda
     unit_of_measurement: "kWh"
     device_class: energy
     state_class: "total_increasing"
     accuracy_decimals: 1
-    value_type: U_DWORD_R
-    filters:
-      - multiply: 0.1
     icon: "mdi:generator-stationary"
+    lambda: |-
+      // V118: total = reg 95 (high word) << 16 | reg 92 (low word); 93-94 unused.
+      // `data` is the whole polled range, so index from this sensor's offset.
+      size_t o = item->offset;
+      uint32_t low = ((uint32_t) data[o] << 8) | data[o + 1];
+      uint32_t high = ((uint32_t) data[o + 6] << 8) | data[o + 7];
+      return ((high << 16) | low) * 0.1f;
 
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
@@ -91,6 +96,75 @@ binary_sensor:
     address: 195
     device_class: running
     icon: "mdi:power"
+
+
+text_sensor:
+  # =======================================================
+  # 1. Relay status (Bits 0-3)
+  # =======================================================
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Generator Relay Status"
+    id: generator_relay_status
+    register_type: holding
+    address: 195
+    response_size: 2
+    icon: "mdi:electric-switch"
+    lambda: |-
+      // Join 2 bytes in one 16bits word
+      uint16_t val = ((uint16_t)x[0] << 8) | x[1];
+      
+      // Apply the mask 0x0F (1111 in bin) to isolate bits 0-3
+      uint8_t state = val & 0x0F; 
+      
+      if (state == 0) return std::string("Disconnected (Not attached)");
+      if (state == 1) return std::string("Closed (Actuation)");
+      if (state == 2) return std::string("Vacancy");
+      if (state == 3) return std::string("Running & Closed");
+      
+      return std::string("Unknown Code: ") + to_string(state);
+
+  # =======================================================
+  # 2. SWITCH SIGNAL (Bits 4-7)
+  # =======================================================
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Generator Switch Signal"
+    id: generator_switch_signal
+    register_type: holding
+    address: 195
+    response_size: 2
+    icon: "mdi:power"
+    lambda: |-
+      uint16_t val = ((uint16_t)x[0] << 8) | x[1];
+      
+      uint8_t state = (val >> 4) & 0x0F; 
+      
+      if (state == 0) return std::string("Power Off");
+      if (state == 1) return std::string("Power On");
+      
+      return std::string("Unknown Code: ") + to_string(state);
+
+  # =======================================================
+  # 3. GEN SIGNAL (Bits 8-11)
+  # =======================================================
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Generator Power Signal"
+    id: generator_power_signal
+    register_type: holding
+    address: 195
+    response_size: 2
+    icon: "mdi:lightning-bolt"
+    lambda: |-
+      uint16_t val = ((uint16_t)x[0] << 8) | x[1];
+      
+      uint8_t state = (val >> 8) & 0x0F; 
+      
+      if (state == 0) return std::string("Not Generating");
+      if (state == 1) return std::string("Generating");
+      
+      return std::string("Raw Signal: ") + to_string(state);
 
 select:
   - platform: modbus_controller

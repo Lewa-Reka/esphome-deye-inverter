@@ -119,6 +119,8 @@ sensor:
     id: battery_power
     register_type: holding
     address: 190
+    filters:
+      - lambda: ${func_scale_ac_power}
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
@@ -574,3 +576,26 @@ number:
     value_type: U_WORD
     mode: box
     icon: "mdi:battery-charging-50"
+
+text_sensor:
+  - platform: template
+    name: "Battery Status"
+    id: battery_status
+    icon: "mdi:battery-sync"
+    update_interval: 5s
+    lambda: |-
+      // We make sure that the power sensor has a value (Address 190)
+      if (isnan(id(battery_power).state)) {
+        return std::string("Unknown");
+      }
+      
+      float power = id(battery_power).state;
+      
+      // Lets apply a 40W threshold to evade false positives when the BMS is floating
+      if (power > 40.0) {
+        return std::string("Discharging");
+      } else if (power < -40.0) {
+        return std::string("Charging");
+      } else {
+        return std::string("Idle / Standby");
+      }

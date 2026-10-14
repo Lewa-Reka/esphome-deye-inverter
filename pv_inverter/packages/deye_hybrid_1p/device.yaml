@@ -101,6 +101,114 @@ switch:
     bitmask: 1
     entity_category: config
     icon: mdi:toggle-switch
+    
+  # ==========================================
+  # CT & METER CONFIGURATION (Address 326)
+  # ==========================================
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Meter 1 CT Enable"
+    register_type: holding
+    address: 326
+    bitmask: 0x0001  # Bit 0: Enable Meter 1 CT
+    write_lambda: |-
+      auto *raw = id(meter_type_raw);
+      ${bit_rmw_write}
+    entity_category: config
+    icon: "mdi:current-ac"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Meter Phase A Enable"
+    register_type: holding
+    address: 326
+    bitmask: 0x0002  # Bit 1: Enable Phase A
+    write_lambda: |-
+      auto *raw = id(meter_type_raw);
+      ${bit_rmw_write}
+    entity_category: config
+    icon: "mdi:sine-wave"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Meter Phase B Enable"
+    register_type: holding
+    address: 326
+    bitmask: 0x0004  # Bit 2: Enable Phase B
+    write_lambda: |-
+      auto *raw = id(meter_type_raw);
+      ${bit_rmw_write}
+    entity_category: config
+    icon: "mdi:sine-wave"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Meter Phase C Enable"
+    register_type: holding
+    address: 326
+    bitmask: 0x0008  # Bit 3: Enable Phase C
+    write_lambda: |-
+      auto *raw = id(meter_type_raw);
+      ${bit_rmw_write}
+    entity_category: config
+    icon: "mdi:sine-wave"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "AC Couple on Grid Side (ActoGrid)"
+    register_type: holding
+    address: 326
+    bitmask: 0x0040  # Bit 6: Enable ActoGrid
+    write_lambda: |-
+      auto *raw = id(meter_type_raw);
+      ${bit_rmw_write}
+    entity_category: config
+    icon: "mdi:transmission-tower"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "AC Couple on Load Side (ActoLoad)"
+    register_type: holding
+    address: 326
+    bitmask: 0x0080  # Bit 7: Enable ActoLoad
+    write_lambda: |-
+      auto *raw = id(meter_type_raw);
+      ${bit_rmw_write}
+    entity_category: config
+    icon: "mdi:home-lightning-bolt"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Meter 2 CT Enable"
+    register_type: holding
+    address: 326
+    bitmask: 0x1000  # Bit 12: Enable Meter 2 CT
+    write_lambda: |-
+      auto *raw = id(meter_type_raw);
+      ${bit_rmw_write}
+    entity_category: config
+    icon: "mdi:current-ac"
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Generator Force Open"
+    register_type: holding
+    address: 326
+    bitmask: 0x2000  # Bit 13: Enable Generator force open
+    write_lambda: |-
+      auto *raw = id(meter_type_raw);
+      ${bit_rmw_write}
+    entity_category: config
+    icon: "mdi:generator-stationary"
 
 text_sensor:
   - platform: modbus_controller
@@ -297,63 +405,98 @@ text_sensor:
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Device Alarm"
+    id: device_alarm
     register_type: holding
     entity_category: diagnostic
     address: 101
     response_size: 4
-    bitmask: 0
     raw_encode: NONE
     icon: "mdi:alert-outline"
     lambda: |-
       if (x.size() < 4) return std::string("N/A");
 
-      uint16_t word1 = ((uint16_t)(uint8_t)x[0] << 8) | (uint8_t)x[1];
-      uint16_t word2 = ((uint16_t)(uint8_t)x[2] << 8) | (uint8_t)x[3];
+      uint16_t word1 = ((uint16_t)x[0] << 8) | x[1];
+      uint16_t word2 = ((uint16_t)x[2] << 8) | x[3];
       uint32_t value = ((uint32_t)word2 << 16) | word1;
 
       if (value == 0) return std::string("OK");
 
-      if (value & (1UL << 1)) return std::string("Fan failure");
-      if (value & (1UL << 2)) return std::string("Grid phase failure");
-      if (value & (1UL << 3)) return std::string("Meter communication failure");
-      if (value & (1UL << 30)) return std::string("Battery loss");
-      if (value & (1UL << 31)) return std::string("Parallel communication quality");
+      std::string alarms = "";
+      if (value & (1UL << 1)) alarms += "Fan failure (W02); ";
+      if (value & (1UL << 2)) alarms += "Grid phase wrong (W03); ";
+      if (value & (1UL << 3)) alarms += "Meter Comm Fail (W04); ";
+      if (value & (1UL << 30)) alarms += "Battery loss (W31); ";
+      if (value & (1UL << 31)) alarms += "Parallel comm quality (W32); ";
 
-      return std::string("Error");
+      if (alarms == "") return std::string("Unknown Alarm Code");
+      
+      // Remove the last "; " for cleaner formatting
+      alarms.pop_back(); 
+      alarms.pop_back();
+      return alarms;
 
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Device Fault"
+    id: device_fault
     register_type: holding
     address: 103
     response_size: 8
-    bitmask: 0
     entity_category: diagnostic
     raw_encode: NONE
     icon: "mdi:message-alert-outline"
     lambda: |-
       if (x.size() < 8) return std::string("N/A");
 
-      uint16_t word1 = ((uint16_t)(uint8_t)x[0] << 8) | (uint8_t)x[1];
-      uint16_t word2 = ((uint16_t)(uint8_t)x[2] << 8) | (uint8_t)x[3];
-      uint16_t word3 = ((uint16_t)(uint8_t)x[4] << 8) | (uint8_t)x[5];
-      uint16_t word4 = ((uint16_t)(uint8_t)x[6] << 8) | (uint8_t)x[7];
+      uint16_t word1 = ((uint16_t)x[0] << 8) | x[1];
+      uint16_t word2 = ((uint16_t)x[2] << 8) | x[3];
+      uint16_t word3 = ((uint16_t)x[4] << 8) | x[5];
+      uint16_t word4 = ((uint16_t)x[6] << 8) | x[7];
 
       uint64_t value = ((uint64_t)word4 << 48) | ((uint64_t)word3 << 32) | 
-                      ((uint64_t)word2 << 16) | word1;
+                       ((uint64_t)word2 << 16) | word1;
 
       if (value == 0) return std::string("OK");
 
-      if (value & (1ULL << 6)) return std::string("DC/DC Soft Start failure");
-      if (value & (1ULL << 9)) return std::string("Auxiliary power supply failure");
-      if (value & (1ULL << 12)) return std::string("Working mode changed");
-      if (value & (1ULL << 17)) return std::string("AC Over-current failure");
-      if (value & (1ULL << 18)) return std::string("Tz_Integ_Fault failure");
-      if (value & (1ULL << 19)) return std::string("DC Over-current failure");
-      if (value & (1ULL << 22)) return std::string("AC current leakage failure");
-      if (value & (1ULL << 63)) return std::string("Temperature is too high");
+      std::string faults = "";
+      
+      // Mapping following Deye V118 manual
+      if (value & (1ULL << 6)) faults += "DC/DC Soft Start (F07); ";
+      if (value & (1ULL << 9)) faults += "Auxiliary power supply (F10); ";
+      if (value & (1ULL << 12)) faults += "Working mode changed (F13); ";
+      if (value & (1ULL << 16)) faults += "Active_Battery_Hold (F17); ";
+      if (value & (1ULL << 17)) faults += "AC Over-current (F18); ";
+      if (value & (1ULL << 19)) faults += "DC Over-current (F20); ";
+      if (value & (1ULL << 21)) faults += "EmergStop_Fault (F22); ";
+      if (value & (1ULL << 22)) faults += "AC current leakage (F23); ";
+      if (value & (1ULL << 23)) faults += "DC insulation impedance (F24); ";
+      if (value & (1ULL << 24)) faults += "AC_Active_Batt_Fault (F25); ";
+      if (value & (1ULL << 25)) faults += "DC busbar unbalanced (F26); ";
+      if (value & (1ULL << 28)) faults += "Parallel_CANBus_Fault (F29); ";
+      if (value & (1ULL << 30)) faults += "Soft_Start_Failed (F31); ";
+      if (value & (1ULL << 34)) faults += "No AC grid (F35); ";
+      if (value & (1ULL << 36)) faults += "DCLLC Soft Over Cur (F37); ";
+      if (value & (1ULL << 38)) faults += "DCLLC_Over Current (F39); ";
+      if (value & (1ULL << 39)) faults += "Batt_Over Current (F40); ";
+      if (value & (1ULL << 40)) faults += "Parallel_system_Stop (F41); ";
+      if (value & (1ULL << 41)) faults += "AC line low voltage (F42); ";
+      if (value & (1ULL << 45)) faults += "Backup_Battery_Fault (F46); ";
+      if (value & (1ULL << 46)) faults += "AC over frequency (F47); ";
+      if (value & (1ULL << 47)) faults += "AC lower frequency (F48); ";
+      if (value & (1ULL << 48)) faults += "Backup_Battery_Fault (F49); "; // the manual groups F46/F49 under the same name
+      if (value & (1ULL << 55)) faults += "DC busbar voltage low (F56); ";
+      if (value & (1ULL << 57)) faults += "BMS communication (F58); ";
+      if (value & (1ULL << 59)) faults += "Gen Volt or Fre Fault (F60); ";
+      if (value & (1ULL << 60)) faults += "Button Manual_OFF (F61); ";
+      if (value & (1ULL << 62)) faults += "ARC fault (F63); ";
+      if (value & (1ULL << 63)) faults += "Heat sink high temp (F64); ";
 
-      return std::string("Error");
+      if (faults == "") return std::string("Unknown Fault Code");
+      
+      // Delete the latest "; " so we have a clean text
+      faults.pop_back();
+      faults.pop_back();
+      return faults;
 
 number:
   - platform: modbus_controller
@@ -371,16 +514,65 @@ number:
     mode: box
     icon: "mdi:timer-check"
 
-select:
+  # ==========================================
+  # HIDDEN RAW CONTROLLER (Address 326)
+  # ==========================================
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
-    name: "Meter"
+    name: "Meter Type Hidden Writer"
+    id: meter_type_raw
     address: 326
     value_type: U_WORD
+    # This keeps the component hidden from Home Assistant
+    internal: true
+
+select:
+  # ==========================================
+  # METER TYPE SELECTION (Address 326, Bits 8-11)
+  # ==========================================
+  - platform: template
+    name: "Meter Type"
+    id: meter_type_select
     entity_category: config
-    icon: "mdi:connection"
-    optionsmap:
-      "Disable": 0
-      "Enable": 1
-      "Generator": 13
+    icon: "mdi:gauge"
+    options:
+      - "None / Disabled"
+      - "Eastron SDM630 (3-Phase)"
+      - "Chint DTSU666 (3-Phase)"
+      - "Eastron SDM230 (1-Phase)"
+      - "Chint DDSU666 (1-Phase)"
+    
+    # READ: Extracts bits 8-11, shifts them right by 8 positions, and maps to text
+    lambda: |-
+      if (isnan(id(meter_type_raw).state)) {
+        return {};
+      }
+      
+      uint16_t val = (uint16_t)id(meter_type_raw).state;
+      // Mask 0x0F00 isolates bits 8-11. Then we shift 8 positions to the right.
+      uint8_t state = (val & 0x0F00) >> 8; 
+      
+      if (state == 0) return std::string("None / Disabled");
+      if (state == 1) return std::string("Eastron SDM630 (3-Phase)");
+      if (state == 2) return std::string("Chint DTSU666 (3-Phase)");
+      if (state == 3) return std::string("Eastron SDM230 (1-Phase)");
+      if (state == 4) return std::string("Chint DDSU666 (1-Phase)");
+      
+      return {};
+      
+    # WRITE: read-modify-write of bits 8-11, skipped until the register has been read
+    set_action:
+      - lambda: |-
+          auto *raw = id(meter_type_raw);
+          if (std::isnan(raw->state)) {
+            ESP_LOGW("deye", "Meter Type: register 326 not read yet, write skipped");
+            return;
+          }
+          uint16_t type = 0;
+          if (x == "Eastron SDM630 (3-Phase)") type = 1;
+          else if (x == "Chint DTSU666 (3-Phase)") type = 2;
+          else if (x == "Eastron SDM230 (1-Phase)") type = 3;
+          else if (x == "Chint DDSU666 (1-Phase)") type = 4;
+          uint16_t value = ((uint16_t) raw->state & 0xF0FF) | (type << 8);  // keep bits 0-7, 12-15
+          raw->make_call().set_value(value).perform();
