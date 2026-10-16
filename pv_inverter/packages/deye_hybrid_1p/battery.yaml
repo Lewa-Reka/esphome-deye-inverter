@@ -119,8 +119,6 @@ sensor:
     id: battery_power
     register_type: holding
     address: 190
-    filters:
-      - lambda: ${func_scale_ac_power}
     unit_of_measurement: "W"
     device_class: power
     state_class: "measurement"
@@ -137,7 +135,11 @@ sensor:
     device_class: current
     accuracy_decimals: 2
     filters:
-      - multiply: 0.1
+      # 0.1 A/LSB when reg 54 AC power ratio is 10 (e.g. SUN-10K-SG02LP1, #127), 0.01 A otherwise
+      - lambda: |-
+          float ratio = id(ac_power_ratio).state;
+          if (std::isnan(ratio)) return {};
+          return x * (ratio == 10.0f ? 0.1f : 0.01f);
     value_type: S_WORD
     icon: "mdi:current-dc"
 
