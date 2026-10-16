@@ -135,7 +135,11 @@ sensor:
     device_class: current
     accuracy_decimals: 2
     filters:
-      - multiply: 0.1
+      # 0.1 A/LSB when reg 54 AC power ratio is 10 (e.g. SUN-10K-SG02LP1, #127), 0.01 A otherwise
+      - lambda: |-
+          float ratio = id(ac_power_ratio).state;
+          if (std::isnan(ratio)) return {};
+          return x * (ratio == 10.0f ? 0.1f : 0.01f);
     value_type: S_WORD
     icon: "mdi:current-dc"
 
@@ -574,3 +578,26 @@ number:
     value_type: U_WORD
     mode: box
     icon: "mdi:battery-charging-50"
+
+text_sensor:
+  - platform: template
+    name: "Battery Status"
+    id: battery_status
+    icon: "mdi:battery-sync"
+    update_interval: 5s
+    lambda: |-
+      // We make sure that the power sensor has a value (Address 190)
+      if (isnan(id(battery_power).state)) {
+        return std::string("Unknown");
+      }
+      
+      float power = id(battery_power).state;
+      
+      // Lets apply a 40W threshold to evade false positives when the BMS is floating
+      if (power > 40.0) {
+        return std::string("Discharging");
+      } else if (power < -40.0) {
+        return std::string("Charging");
+      } else {
+        return std::string("Idle / Standby");
+      }

@@ -312,19 +312,49 @@ select:
       "50 Hz": 0
       "60 Hz": 1
 
-  - platform: modbus_controller
-    use_write_multiple: true
-    modbus_controller_id: ${modbus_controller_id}
+  # ==========================================
+  # TEMPLATE SELECT FOR UI
+  # ==========================================
+  - platform: template
     name: "Charging Signal"
-    address: 242
-    value_type: U_WORD
+    id: charging_signal_select
     entity_category: config
     icon: "mdi:battery-charging"
-    optionsmap:
-      "Normal": 0
-      "Grid": 1
-      "Generator": 2
-      "Both": 3
+    options:
+      - "Normal"
+      - "Grid"
+      - "Generator"
+      - "Both"
+    
+    # READ: Extracts the lower 2 bits from the raw number and maps it to text
+    lambda: |-
+      if (isnan(id(gen_grid_signal_raw).state)) {
+        return {};
+      }
+      
+      uint16_t val = (uint16_t)id(gen_grid_signal_raw).state;
+      uint8_t state = val & 0x0003; 
+      
+      if (state == 0) return std::string("Normal");
+      if (state == 1) return std::string("Grid");
+      if (state == 2) return std::string("Generator");
+      if (state == 3) return std::string("Both");
+      
+      return {};
+      
+    # WRITE: read-modify-write of bits 0-1, skipped until the register has been read
+    set_action:
+      - lambda: |-
+          auto *raw = id(gen_grid_signal_raw);
+          if (std::isnan(raw->state)) {
+            ESP_LOGW("deye", "Charging Signal: register 242 not read yet, write skipped");
+            return;
+          }
+          uint16_t value = (uint16_t) raw->state & 0xFFFC;  // keep bits 2-15
+          if (x == "Grid") value |= 1;
+          else if (x == "Generator") value |= 2;
+          else if (x == "Both") value |= 3;
+          raw->make_call().set_value(value).perform();
 
 switch:
   - platform: modbus_controller
@@ -420,3 +450,16 @@ number:
     value_type: U_WORD
     mode: box
     icon: "mdi:sine-wave"
+
+  # ==========================================
+  # HIDDEN RAW CONTROLLER (Address 242)
+  # ==========================================
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Gen Grid Signal Hidden Writer"
+    id: gen_grid_signal_raw
+    address: 242
+    value_type: U_WORD
+    # This keeps the component hidden from Home Assistant
+    internal: true

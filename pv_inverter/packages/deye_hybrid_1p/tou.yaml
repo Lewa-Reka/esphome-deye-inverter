@@ -4,6 +4,19 @@ substitutions:
     uint8_t minutes = raw - (hours * 100);
     return ESPTime {.minute = minutes, .hour = hours};
   func_time_to_int: "return x.hour * 100 + x.minute;"
+  # write_lambda body for bitmask switches sharing a register (248, 274-279, 326).
+  # A plain modbus_controller bitmask switch writes (state ? bitmask : 0) and wipes the
+  # other bits, so read-modify-write through the hidden raw number `raw` of that register.
+  bit_rmw_write: |-
+    if (std::isnan(raw->state)) {
+      ESP_LOGW("deye", "%s: register not read yet, write skipped", item->get_name().c_str());
+      return {};
+    }
+    uint16_t value = (uint16_t) raw->state;
+    value = x ? (value | item->bitmask) : (value & ~item->bitmask);
+    raw->make_call().set_value(value).perform();
+    item->publish_state(x);
+    return {};
 
 datetime:
   - platform: template
@@ -85,6 +98,11 @@ datetime:
           value: !lambda ${func_time_to_int}
 
 switch:
+  # ==========================================
+  # TIME OF USE SELLING ENABLE (Address 248)
+  # ==========================================
+
+  # Bit 0: General Enable/Disable
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
@@ -92,92 +110,583 @@ switch:
     id: switch_time_of_use
     register_type: holding
     address: 248
-    bitmask: 1
+    bitmask: 0x0001
+    write_lambda: |-
+      auto *raw = id(tou_selling_raw);
+      ${bit_rmw_write}
     icon: "mdi:toggle-switch"
 
+  # Bit 1: Monday Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use Monday"
+    id: switch_tou_monday
+    register_type: holding
+    address: 248
+    bitmask: 0x0002
+    write_lambda: |-
+      auto *raw = id(tou_selling_raw);
+      ${bit_rmw_write}
+    icon: "mdi:calendar-range"
+
+  # Bit 2: Tuesday Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use Tuesday"
+    id: switch_tou_tuesday
+    register_type: holding
+    address: 248
+    bitmask: 0x0004
+    write_lambda: |-
+      auto *raw = id(tou_selling_raw);
+      ${bit_rmw_write}
+    icon: "mdi:calendar-range"
+
+  # Bit 3: Wednesday Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use Wednesday"
+    id: switch_tou_wednesday
+    register_type: holding
+    address: 248
+    bitmask: 0x0008
+    write_lambda: |-
+      auto *raw = id(tou_selling_raw);
+      ${bit_rmw_write}
+    icon: "mdi:calendar-range"
+
+  # Bit 4: Thursday Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use Thursday"
+    id: switch_tou_thursday
+    register_type: holding
+    address: 248
+    bitmask: 0x0010
+    write_lambda: |-
+      auto *raw = id(tou_selling_raw);
+      ${bit_rmw_write}
+    icon: "mdi:calendar-range"
+
+  # Bit 5: Friday Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use Friday"
+    id: switch_tou_friday
+    register_type: holding
+    address: 248
+    bitmask: 0x0020
+    write_lambda: |-
+      auto *raw = id(tou_selling_raw);
+      ${bit_rmw_write}
+    icon: "mdi:calendar-range"
+
+  # Bit 6: Saturday Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use Saturday"
+    id: switch_tou_saturday
+    register_type: holding
+    address: 248
+    bitmask: 0x0040
+    write_lambda: |-
+      auto *raw = id(tou_selling_raw);
+      ${bit_rmw_write}
+    icon: "mdi:calendar-range"
+
+  # Bit 7: Sunday Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use Sunday"
+    id: switch_tou_sunday
+    register_type: holding
+    address: 248
+    bitmask: 0x0080
+    write_lambda: |-
+      auto *raw = id(tou_selling_raw);
+      ${bit_rmw_write}
+    icon: "mdi:calendar-range"
+
+  # Bit 8: Operating Mode 3 (Spanish customer requirement)
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use Mode 3 (Spain)"
+    id: switch_tou_mode_3
+    register_type: holding
+    address: 248
+    bitmask: 0x0100
+    write_lambda: |-
+      auto *raw = id(tou_selling_raw);
+      ${bit_rmw_write}
+    entity_category: config
+    icon: "mdi:cog-outline"
+
+  # ==========================================
+  # TIME OF USE 1 (Address 274)
+  # ==========================================
+
+  # TIME 1: Grid Charge Enable
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 1 Charge Enable"
     id: switch_time_point_1_charge_enable
-    restore_mode: DISABLED
     register_type: holding
     address: 274
-    bitmask: 1
-    icon: "mdi:battery-plus"
+    bitmask: 1  # Bit 0: Grid charge enable
+    write_lambda: |-
+      auto *raw = id(tou_slot_1_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:transmission-tower"
 
+  # TIME 1: Gen Charge Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 1 Gen Charge Enable"
+    id: switch_time_point_1_gen_charge_enable
+    register_type: holding
+    address: 274
+    bitmask: 2  # Bit 1: Generator charge enable
+    write_lambda: |-
+      auto *raw = id(tou_slot_1_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:generator-stationary"
+
+  # TIME 1: GM Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 1 GM Mode"
+    id: switch_time_point_1_gm_mode
+    register_type: holding
+    address: 274
+    bitmask: 4  # Bit 2: GM Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_1_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-g-box"
+
+  # TIME 1: BU Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 1 BU Mode"
+    id: switch_time_point_1_bu_mode
+    register_type: holding
+    address: 274
+    bitmask: 8  # Bit 3: BU Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_1_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-b-box"
+
+  # TIME 1: CH Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 1 CH Mode"
+    id: switch_time_point_1_ch_mode
+    register_type: holding
+    address: 274
+    bitmask: 16 # Bit 4: CH Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_1_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-c-box"
+
+  # ==========================================
+  # TIME OF USE 2 (Address 275)
+  # ==========================================
+
+  # TIME 2: Grid Charge Enable
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 2 Charge Enable"
     id: switch_time_point_2_charge_enable
-    restore_mode: DISABLED
     register_type: holding
     address: 275
-    bitmask: 1
-    icon: "mdi:battery-plus"
+    bitmask: 1  # Bit 0: Grid charge enable
+    write_lambda: |-
+      auto *raw = id(tou_slot_2_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:transmission-tower"
 
+  # TIME 2: Gen Charge Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 2 Gen Charge Enable"
+    id: switch_time_point_2_gen_charge_enable
+    register_type: holding
+    address: 275
+    bitmask: 2  # Bit 1: Generator charge enable
+    write_lambda: |-
+      auto *raw = id(tou_slot_2_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:generator-stationary"
+
+  # TIME 2: GM Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 2 GM Mode"
+    id: switch_time_point_2_gm_mode
+    register_type: holding
+    address: 275
+    bitmask: 4  # Bit 2: GM Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_2_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-g-box"
+
+  # TIME 2: BU Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 2 BU Mode"
+    id: switch_time_point_2_bu_mode
+    register_type: holding
+    address: 275
+    bitmask: 8  # Bit 3: BU Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_2_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-b-box"
+  
+  # TIME 2: CH Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 2 CH Mode"
+    id: switch_time_point_2_ch_mode
+    register_type: holding
+    address: 275
+    bitmask: 16 # Bit 4: CH Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_2_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-c-box"
+
+
+  # ==========================================
+  # TIME OF USE 3 (Address 276)
+  # ==========================================
+  
+  # TIME 3: Grid Charge Enable
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 3 Charge Enable"
     id: switch_time_point_3_charge_enable
-    restore_mode: DISABLED
     register_type: holding
     address: 276
-    bitmask: 1
-    icon: "mdi:battery-plus"
+    bitmask: 1  # Bit 0: Grid charge enable
+    write_lambda: |-
+      auto *raw = id(tou_slot_3_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:transmission-tower"
 
+  # TIME 3: Gen Charge Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 3 Gen Charge Enable"
+    id: switch_time_point_3_gen_charge_enable
+    register_type: holding
+    address: 276
+    bitmask: 2  # Bit 1: Generator charge enable
+    write_lambda: |-
+      auto *raw = id(tou_slot_3_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:generator-stationary"
+
+  # TIME 3: GM Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 3 GM Mode"
+    id: switch_time_point_3_gm_mode
+    register_type: holding
+    address: 276
+    bitmask: 4  # Bit 2: GM Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_3_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-g-box"
+
+  # TIME 3: BU Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 3 BU Mode"
+    id: switch_time_point_3_bu_mode
+    register_type: holding
+    address: 276
+    bitmask: 8  # Bit 3: BU Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_3_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-b-box"
+
+  # TIME 3: CH Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 3 CH Mode"
+    id: switch_time_point_3_ch_mode
+    register_type: holding
+    address: 276
+    bitmask: 16 # Bit 4: CH Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_3_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-c-box"
+
+
+  # ==========================================
+  # TIME OF USE 4 (Address 277)
+  # ==========================================
+
+  # TIME 4: Grid Charge Enable
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 4 Charge Enable"
     id: switch_time_point_4_charge_enable
-    restore_mode: DISABLED
     register_type: holding
     address: 277
-    bitmask: 1
-    icon: "mdi:battery-plus"
+    bitmask: 1  # Bit 0: Grid charge enable
+    write_lambda: |-
+      auto *raw = id(tou_slot_4_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:transmission-tower"
 
+  # TIME 4: Gen Charge Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 4 Gen Charge Enable"
+    id: switch_time_point_4_gen_charge_enable
+    register_type: holding
+    address: 277
+    bitmask: 2  # Bit 1: Generator charge enable
+    write_lambda: |-
+      auto *raw = id(tou_slot_4_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:generator-stationary"
+
+  # TIME 4: GM Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 4 GM Mode"
+    id: switch_time_point_4_gm_mode
+    register_type: holding
+    address: 277
+    bitmask: 4  # Bit 2: GM Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_4_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-g-box"
+
+  # TIME 4: BU Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 4 BU Mode"
+    id: switch_time_point_4_bu_mode
+    register_type: holding
+    address: 277
+    bitmask: 8  # Bit 3: BU Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_4_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-b-box"
+
+  # TIME 4: CH Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 4 CH Mode"
+    id: switch_time_point_4_ch_mode
+    register_type: holding
+    address: 277
+    bitmask: 16 # Bit 4: CH Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_4_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-c-box"
+
+
+  # ==========================================
+  # TIME OF USE 5 (Address 278)
+  # ==========================================
+
+  # TIME 5: Grid Charge Enable
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 5 Charge Enable"
     id: switch_time_point_5_charge_enable
-    restore_mode: DISABLED
     register_type: holding
     address: 278
-    bitmask: 1
-    icon: "mdi:battery-plus"
+    bitmask: 1  # Bit 0: Grid charge enable
+    write_lambda: |-
+      auto *raw = id(tou_slot_5_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:transmission-tower"
 
+  # TIME 5: Gen Charge Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 5 Gen Charge Enable"
+    id: switch_time_point_5_gen_charge_enable
+    register_type: holding
+    address: 278
+    bitmask: 2  # Bit 1: Generator charge enable
+    write_lambda: |-
+      auto *raw = id(tou_slot_5_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:generator-stationary"
+
+  # TIME 5: GM Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 5 GM Mode"
+    id: switch_time_point_5_gm_mode
+    register_type: holding
+    address: 278
+    bitmask: 4  # Bit 2: GM Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_5_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-g-box"
+
+  # TIME 5: BU Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 5 BU Mode"
+    id: switch_time_point_5_bu_mode
+    register_type: holding
+    address: 278
+    bitmask: 8  # Bit 3: BU Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_5_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-b-box"
+
+  # TIME 5: CH Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 5 CH Mode"
+    id: switch_time_point_5_ch_mode
+    register_type: holding
+    address: 278
+    bitmask: 16 # Bit 4: CH Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_5_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-c-box"
+
+  # ==========================================
+  # TIME OF USE 6 (Address 279)
+  # ==========================================
+
+  # TIME 6: Grid Charge Enable
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 6 Charge Enable"
     id: switch_time_point_6_charge_enable
-    restore_mode: DISABLED
     register_type: holding
     address: 279
-    bitmask: 1
-    icon: "mdi:battery-plus"
+    bitmask: 1  # Bit 0: Grid charge enable
+    write_lambda: |-
+      auto *raw = id(tou_slot_6_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:transmission-tower"
 
-  # Sell Mode = undocumented bit 6 (0x40) of the per-slot control registers 274-279.
-  # Native modbus_controller bitmask switch. Writing a bitmask switch blind-writes
-  # (state ? bitmask : 0), so toggling Sell clears the other bits (incl. grid-charge
-  # bit0) and vice-versa -> buy and sell are mutually exclusive per slot.
-  # restore_mode: DISABLED is REQUIRED here (and on the Charge Enable switches above):
-  # a modbus switch otherwise writes its restored state on boot, and because the write
-  # clobbers the whole register that boot-write would wipe grid-charge/sell on every
-  # flash. DISABLED = read-only on boot, write only on user toggle.
+  # TIME 6: Gen Charge Enable
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 6 Gen Charge Enable"
+    id: switch_time_point_6_gen_charge_enable
+    register_type: holding
+    address: 279
+    bitmask: 2  # Bit 1: Generator charge enable
+    write_lambda: |-
+      auto *raw = id(tou_slot_6_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:generator-stationary"
+
+  # TIME 6: GM Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 6 GM Mode"
+    id: switch_time_point_6_gm_mode
+    register_type: holding
+    address: 279
+    bitmask: 4  # Bit 2: GM Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_6_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-g-box"
+
+  # TIME 6: BU Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 6 BU Mode"
+    id: switch_time_point_6_bu_mode
+    register_type: holding
+    address: 279
+    bitmask: 8  # Bit 3: BU Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_6_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-b-box"
+
+  # TIME 6: CH Mode
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 6 CH Mode"
+    id: switch_time_point_6_ch_mode
+    register_type: holding
+    address: 279
+    bitmask: 16 # Bit 4: CH Mode
+    write_lambda: |-
+      auto *raw = id(tou_slot_6_control_raw);
+      ${bit_rmw_write}
+    icon: "mdi:alpha-c-box"
+
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 1 Sell Mode"
     id: switch_time_point_1_sell_mode
-    restore_mode: DISABLED
     register_type: holding
     address: 274
-    bitmask: 64
+    bitmask: 64 # Bit 6: Sell mode (undocumented, see #125)
+    write_lambda: |-
+      auto *raw = id(tou_slot_1_control_raw);
+      ${bit_rmw_write}
     icon: "mdi:transmission-tower-export"
 
   - platform: modbus_controller
@@ -185,10 +694,12 @@ switch:
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 2 Sell Mode"
     id: switch_time_point_2_sell_mode
-    restore_mode: DISABLED
     register_type: holding
     address: 275
-    bitmask: 64
+    bitmask: 64 # Bit 6: Sell mode (undocumented, see #125)
+    write_lambda: |-
+      auto *raw = id(tou_slot_2_control_raw);
+      ${bit_rmw_write}
     icon: "mdi:transmission-tower-export"
 
   - platform: modbus_controller
@@ -196,10 +707,12 @@ switch:
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 3 Sell Mode"
     id: switch_time_point_3_sell_mode
-    restore_mode: DISABLED
     register_type: holding
     address: 276
-    bitmask: 64
+    bitmask: 64 # Bit 6: Sell mode (undocumented, see #125)
+    write_lambda: |-
+      auto *raw = id(tou_slot_3_control_raw);
+      ${bit_rmw_write}
     icon: "mdi:transmission-tower-export"
 
   - platform: modbus_controller
@@ -207,10 +720,12 @@ switch:
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 4 Sell Mode"
     id: switch_time_point_4_sell_mode
-    restore_mode: DISABLED
     register_type: holding
     address: 277
-    bitmask: 64
+    bitmask: 64 # Bit 6: Sell mode (undocumented, see #125)
+    write_lambda: |-
+      auto *raw = id(tou_slot_4_control_raw);
+      ${bit_rmw_write}
     icon: "mdi:transmission-tower-export"
 
   - platform: modbus_controller
@@ -218,10 +733,12 @@ switch:
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 5 Sell Mode"
     id: switch_time_point_5_sell_mode
-    restore_mode: DISABLED
     register_type: holding
     address: 278
-    bitmask: 64
+    bitmask: 64 # Bit 6: Sell mode (undocumented, see #125)
+    write_lambda: |-
+      auto *raw = id(tou_slot_5_control_raw);
+      ${bit_rmw_write}
     icon: "mdi:transmission-tower-export"
 
   - platform: modbus_controller
@@ -229,16 +746,19 @@ switch:
     modbus_controller_id: ${modbus_controller_id}
     name: "Time of Use 6 Sell Mode"
     id: switch_time_point_6_sell_mode
-    restore_mode: DISABLED
     register_type: holding
     address: 279
-    bitmask: 64
+    bitmask: 64 # Bit 6: Sell mode (undocumented, see #125)
+    write_lambda: |-
+      auto *raw = id(tou_slot_6_control_raw);
+      ${bit_rmw_write}
     icon: "mdi:transmission-tower-export"
 
+  # Master switch to control Grid Charge across all 6 time points
   - platform: template
     name: "Time of Use All Charge Enable"
     id: switch_time_of_use_all_charge_enable
-    icon: "mdi:battery-plus"
+    icon: "mdi:transmission-tower"
     optimistic: true
     restore_mode: DISABLED
     disabled_by_default: true
@@ -270,6 +790,43 @@ switch:
           id: switch_time_point_5_charge_enable
       - switch.turn_off:
           id: switch_time_point_6_charge_enable
+
+  # Master switch to control Generator Charge across all 6 time points
+  - platform: template
+    name: "Time of Use All Gen Charge Enable"
+    id: switch_time_of_use_all_gen_charge_enable
+    icon: "mdi:generator-stationary"
+    optimistic: true
+    restore_mode: DISABLED
+    disabled_by_default: true
+    lambda: |-
+      return id(switch_time_point_1_gen_charge_enable).state;
+    turn_on_action:
+      - switch.turn_on:
+          id: switch_time_point_1_gen_charge_enable
+      - switch.turn_on:
+          id: switch_time_point_2_gen_charge_enable
+      - switch.turn_on:
+          id: switch_time_point_3_gen_charge_enable
+      - switch.turn_on:
+          id: switch_time_point_4_gen_charge_enable
+      - switch.turn_on:
+          id: switch_time_point_5_gen_charge_enable
+      - switch.turn_on:
+          id: switch_time_point_6_gen_charge_enable
+    turn_off_action:
+      - switch.turn_off:
+          id: switch_time_point_1_gen_charge_enable
+      - switch.turn_off:
+          id: switch_time_point_2_gen_charge_enable
+      - switch.turn_off:
+          id: switch_time_point_3_gen_charge_enable
+      - switch.turn_off:
+          id: switch_time_point_4_gen_charge_enable
+      - switch.turn_off:
+          id: switch_time_point_5_gen_charge_enable
+      - switch.turn_off:
+          id: switch_time_point_6_gen_charge_enable
 
 number:
   - platform: modbus_controller
@@ -518,89 +1075,347 @@ number:
     mode: box
     icon: "mdi:power-plug"
 
+  # ==========================================
+  # TIME OF USE 1 (Address 268)
+  # ==========================================
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 1 SoC RAW"
+    id: time_of_use_1_soc_raw
+    register_type: holding
+    address: 268
+    value_type: U_WORD
+    internal: true
+
+  - platform: template
     name: "Time of Use 1 SoC"
     id: time_of_use_1_soc
     unit_of_measurement: "%"
-    address: 268
+    device_class: battery
     min_value: 0
     max_value: 100
     step: 1
-    value_type: U_WORD
     mode: box
     icon: "mdi:battery-clock"
+    # READ: Isolate the Low Byte to get the Grid SoC
+    lambda: |-
+      if (isnan(id(time_of_use_1_soc_raw).state)) return {};
+      uint16_t raw = (uint16_t)id(time_of_use_1_soc_raw).state;
+      return raw & 0x00FF;
+    # WRITE: Keep the High Byte intact and overwrite the Low Byte
+    set_action:
+      - lambda: |-
+          auto *raw = id(time_of_use_1_soc_raw);
+          if (std::isnan(raw->state)) return;  // register not read yet
+          raw->make_call().set_value(((uint16_t) raw->state & 0xFF00) | (uint16_t) x).perform();
 
+  - platform: template
+    name: "Time of Use 1 Gen SoC"
+    id: time_of_use_1_gen_soc
+    unit_of_measurement: "%"
+    device_class: battery
+    min_value: 0
+    max_value: 100
+    step: 1
+    mode: box
+    icon: "mdi:generator-stationary"
+    # READ: Isolate the High Byte and shift it 8 positions right to get the Gen SoC
+    lambda: |-
+      if (isnan(id(time_of_use_1_soc_raw).state)) return {};
+      uint16_t raw = (uint16_t)id(time_of_use_1_soc_raw).state;
+      return (raw >> 8) & 0x00FF;
+    # WRITE: Keep the Low Byte intact and overwrite the High Byte
+    set_action:
+      - lambda: |-
+          auto *raw = id(time_of_use_1_soc_raw);
+          if (std::isnan(raw->state)) return;  // register not read yet
+          raw->make_call().set_value(((uint16_t) raw->state & 0x00FF) | ((uint16_t) x << 8)).perform();
+
+  # ==========================================
+  # TIME OF USE 2 (Address 269)
+  # ==========================================
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 2 SoC RAW"
+    id: time_of_use_2_soc_raw
+    register_type: holding
+    address: 269
+    value_type: U_WORD
+    internal: true
+
+  - platform: template
     name: "Time of Use 2 SoC"
     id: time_of_use_2_soc
     unit_of_measurement: "%"
-    address: 269
+    device_class: battery
     min_value: 0
     max_value: 100
     step: 1
-    value_type: U_WORD
     mode: box
     icon: "mdi:battery-clock"
+    # READ: Isolate the Low Byte to get the Grid SoC
+    lambda: |-
+      if (isnan(id(time_of_use_2_soc_raw).state)) return {};
+      uint16_t raw = (uint16_t)id(time_of_use_2_soc_raw).state;
+      return raw & 0x00FF;
+    # WRITE: Keep the High Byte intact and overwrite the Low Byte
+    set_action:
+      - lambda: |-
+          auto *raw = id(time_of_use_2_soc_raw);
+          if (std::isnan(raw->state)) return;  // register not read yet
+          raw->make_call().set_value(((uint16_t) raw->state & 0xFF00) | (uint16_t) x).perform();
 
+  - platform: template
+    name: "Time of Use 2 Gen SoC"
+    id: time_of_use_2_gen_soc
+    unit_of_measurement: "%"
+    device_class: battery
+    min_value: 0
+    max_value: 100
+    step: 1
+    mode: box
+    icon: "mdi:generator-stationary"
+    # READ: Isolate the High Byte and shift it 8 positions right to get the Gen SoC
+    lambda: |-
+      if (isnan(id(time_of_use_2_soc_raw).state)) return {};
+      uint16_t raw = (uint16_t)id(time_of_use_2_soc_raw).state;
+      return (raw >> 8) & 0x00FF;
+    # WRITE: Keep the Low Byte intact and overwrite the High Byte
+    set_action:
+      - lambda: |-
+          auto *raw = id(time_of_use_2_soc_raw);
+          if (std::isnan(raw->state)) return;  // register not read yet
+          raw->make_call().set_value(((uint16_t) raw->state & 0x00FF) | ((uint16_t) x << 8)).perform();
+
+  # ==========================================
+  # TIME OF USE 3 (Address 270)
+  # ==========================================
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 3 SoC RAW"
+    id: time_of_use_3_soc_raw
+    register_type: holding
+    address: 270
+    value_type: U_WORD
+    internal: true
+
+  - platform: template
     name: "Time of Use 3 SoC"
     id: time_of_use_3_soc
     unit_of_measurement: "%"
-    address: 270
+    device_class: battery
     min_value: 0
     max_value: 100
     step: 1
-    value_type: U_WORD
     mode: box
     icon: "mdi:battery-clock"
+    # READ: Isolate the Low Byte to get the Grid SoC
+    lambda: |-
+      if (isnan(id(time_of_use_3_soc_raw).state)) return {};
+      uint16_t raw = (uint16_t)id(time_of_use_3_soc_raw).state;
+      return raw & 0x00FF;
+    # WRITE: Keep the High Byte intact and overwrite the Low Byte
+    set_action:
+      - lambda: |-
+          auto *raw = id(time_of_use_3_soc_raw);
+          if (std::isnan(raw->state)) return;  // register not read yet
+          raw->make_call().set_value(((uint16_t) raw->state & 0xFF00) | (uint16_t) x).perform();
 
+  - platform: template
+    name: "Time of Use 3 Gen SoC"
+    id: time_of_use_3_gen_soc
+    unit_of_measurement: "%"
+    device_class: battery
+    min_value: 0
+    max_value: 100
+    step: 1
+    mode: box
+    icon: "mdi:generator-stationary"
+    # READ: Isolate the High Byte and shift it 8 positions right to get the Gen SoC
+    lambda: |-
+      if (isnan(id(time_of_use_3_soc_raw).state)) return {};
+      uint16_t raw = (uint16_t)id(time_of_use_3_soc_raw).state;
+      return (raw >> 8) & 0x00FF;
+    # WRITE: Keep the Low Byte intact and overwrite the High Byte
+    set_action:
+      - lambda: |-
+          auto *raw = id(time_of_use_3_soc_raw);
+          if (std::isnan(raw->state)) return;  // register not read yet
+          raw->make_call().set_value(((uint16_t) raw->state & 0x00FF) | ((uint16_t) x << 8)).perform();
+
+  # ==========================================
+  # TIME OF USE 4 (Address 271)
+  # ==========================================
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 4 SoC RAW"
+    id: time_of_use_4_soc_raw
+    register_type: holding
+    address: 271
+    value_type: U_WORD
+    internal: true
+
+  - platform: template
     name: "Time of Use 4 SoC"
     id: time_of_use_4_soc
     unit_of_measurement: "%"
-    address: 271
+    device_class: battery
     min_value: 0
     max_value: 100
     step: 1
-    value_type: U_WORD
     mode: box
     icon: "mdi:battery-clock"
+    # READ: Isolate the Low Byte to get the Grid SoC
+    lambda: |-
+      if (isnan(id(time_of_use_4_soc_raw).state)) return {};
+      uint16_t raw = (uint16_t)id(time_of_use_4_soc_raw).state;
+      return raw & 0x00FF;
+    # WRITE: Keep the High Byte intact and overwrite the Low Byte
+    set_action:
+      - lambda: |-
+          auto *raw = id(time_of_use_4_soc_raw);
+          if (std::isnan(raw->state)) return;  // register not read yet
+          raw->make_call().set_value(((uint16_t) raw->state & 0xFF00) | (uint16_t) x).perform();
 
+  - platform: template
+    name: "Time of Use 4 Gen SoC"
+    id: time_of_use_4_gen_soc
+    unit_of_measurement: "%"
+    device_class: battery
+    min_value: 0
+    max_value: 100
+    step: 1
+    mode: box
+    icon: "mdi:generator-stationary"
+    # READ: Isolate the High Byte and shift it 8 positions right to get the Gen SoC
+    lambda: |-
+      if (isnan(id(time_of_use_4_soc_raw).state)) return {};
+      uint16_t raw = (uint16_t)id(time_of_use_4_soc_raw).state;
+      return (raw >> 8) & 0x00FF;
+    # WRITE: Keep the Low Byte intact and overwrite the High Byte
+    set_action:
+      - lambda: |-
+          auto *raw = id(time_of_use_4_soc_raw);
+          if (std::isnan(raw->state)) return;  // register not read yet
+          raw->make_call().set_value(((uint16_t) raw->state & 0x00FF) | ((uint16_t) x << 8)).perform();
+
+  # ==========================================
+  # TIME OF USE 5 (Address 272)
+  # ==========================================
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 5 SoC RAW"
+    id: time_of_use_5_soc_raw
+    register_type: holding
+    address: 272
+    value_type: U_WORD
+    internal: true
+
+  - platform: template
     name: "Time of Use 5 SoC"
     id: time_of_use_5_soc
     unit_of_measurement: "%"
-    address: 272
+    device_class: battery
     min_value: 0
     max_value: 100
     step: 1
-    value_type: U_WORD
     mode: box
     icon: "mdi:battery-clock"
+    # READ: Isolate the Low Byte to get the Grid SoC
+    lambda: |-
+      if (isnan(id(time_of_use_5_soc_raw).state)) return {};
+      uint16_t raw = (uint16_t)id(time_of_use_5_soc_raw).state;
+      return raw & 0x00FF;
+    # WRITE: Keep the High Byte intact and overwrite the Low Byte
+    set_action:
+      - lambda: |-
+          auto *raw = id(time_of_use_5_soc_raw);
+          if (std::isnan(raw->state)) return;  // register not read yet
+          raw->make_call().set_value(((uint16_t) raw->state & 0xFF00) | (uint16_t) x).perform();
 
+  - platform: template
+    name: "Time of Use 5 Gen SoC"
+    id: time_of_use_5_gen_soc
+    unit_of_measurement: "%"
+    device_class: battery
+    min_value: 0
+    max_value: 100
+    step: 1
+    mode: box
+    icon: "mdi:generator-stationary"
+    # READ: Isolate the High Byte and shift it 8 positions right to get the Gen SoC
+    lambda: |-
+      if (isnan(id(time_of_use_5_soc_raw).state)) return {};
+      uint16_t raw = (uint16_t)id(time_of_use_5_soc_raw).state;
+      return (raw >> 8) & 0x00FF;
+    # WRITE: Keep the Low Byte intact and overwrite the High Byte
+    set_action:
+      - lambda: |-
+          auto *raw = id(time_of_use_5_soc_raw);
+          if (std::isnan(raw->state)) return;  // register not read yet
+          raw->make_call().set_value(((uint16_t) raw->state & 0x00FF) | ((uint16_t) x << 8)).perform();
+
+  # ==========================================
+  # TIME OF USE 6 (Address 273)
+  # ==========================================
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 6 SoC RAW"
+    id: time_of_use_6_soc_raw
+    register_type: holding
+    address: 273
+    value_type: U_WORD
+    internal: true
+
+  - platform: template
     name: "Time of Use 6 SoC"
     id: time_of_use_6_soc
     unit_of_measurement: "%"
-    address: 273
+    device_class: battery
     min_value: 0
     max_value: 100
     step: 1
-    value_type: U_WORD
     mode: box
     icon: "mdi:battery-clock"
+    # READ: Isolate the Low Byte to get the Grid SoC
+    lambda: |-
+      if (isnan(id(time_of_use_6_soc_raw).state)) return {};
+      uint16_t raw = (uint16_t)id(time_of_use_6_soc_raw).state;
+      return raw & 0x00FF;
+    # WRITE: Keep the High Byte intact and overwrite the Low Byte
+    set_action:
+      - lambda: |-
+          auto *raw = id(time_of_use_6_soc_raw);
+          if (std::isnan(raw->state)) return;  // register not read yet
+          raw->make_call().set_value(((uint16_t) raw->state & 0xFF00) | (uint16_t) x).perform();
+
+  - platform: template
+    name: "Time of Use 6 Gen SoC"
+    id: time_of_use_6_gen_soc
+    unit_of_measurement: "%"
+    device_class: battery
+    min_value: 0
+    max_value: 100
+    step: 1
+    mode: box
+    icon: "mdi:generator-stationary"
+    # READ: Isolate the High Byte and shift it 8 positions right to get the Gen SoC
+    lambda: |-
+      if (isnan(id(time_of_use_6_soc_raw).state)) return {};
+      uint16_t raw = (uint16_t)id(time_of_use_6_soc_raw).state;
+      return (raw >> 8) & 0x00FF;
+    # WRITE: Keep the Low Byte intact and overwrite the High Byte
+    set_action:
+      - lambda: |-
+          auto *raw = id(time_of_use_6_soc_raw);
+          if (std::isnan(raw->state)) return;  // register not read yet
+          raw->make_call().set_value(((uint16_t) raw->state & 0x00FF) | ((uint16_t) x << 8)).perform();
 
   - platform: template
     mode: box
@@ -703,3 +1518,67 @@ number:
       - number.set:
           id: time_of_use_6_soc
           value: !lambda "return x;"
+
+  # Hidden raw registers for the read-modify-write of the bitmask switches above
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use Selling Raw"
+    id: tou_selling_raw
+    address: 248
+    value_type: U_WORD
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 1 Control Raw"
+    id: tou_slot_1_control_raw
+    address: 274
+    value_type: U_WORD
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 2 Control Raw"
+    id: tou_slot_2_control_raw
+    address: 275
+    value_type: U_WORD
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 3 Control Raw"
+    id: tou_slot_3_control_raw
+    address: 276
+    value_type: U_WORD
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 4 Control Raw"
+    id: tou_slot_4_control_raw
+    address: 277
+    value_type: U_WORD
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 5 Control Raw"
+    id: tou_slot_5_control_raw
+    address: 278
+    value_type: U_WORD
+    internal: true
+
+  - platform: modbus_controller
+    use_write_multiple: true
+    modbus_controller_id: ${modbus_controller_id}
+    name: "Time of Use 6 Control Raw"
+    id: tou_slot_6_control_raw
+    address: 279
+    value_type: U_WORD
+    internal: true

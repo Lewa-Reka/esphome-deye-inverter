@@ -37,8 +37,8 @@ The system includes convenient "All" entities that allow you to control all Time
 - **Time of Use All SoC**: Set battery charge level for all 6 windows at once
 - **Time of Use All Out Power**: Set output power limit for all 6 windows at once  
 - **Time of Use All Voltage**: Set voltage threshold for all 6 windows at once
-- **Time of Use All Grid Charge**: Enable/disable grid charging for all 6 windows at once
-- **Time of Use All Gen (currently only 3P)**: Enable/disable generator charging for all 6 windows at once
+- **Time of Use All Grid Charge** (1P: **Time of Use All Charge Enable**): Enable/disable grid charging for all 6 windows at once
+- **Time of Use All Gen** (1P: **Time of Use All Gen Charge Enable**): Enable/disable generator charging for all 6 windows at once
 - **Time of Use All Sell (currently only 3P and probably only working properly with HV)**: Enable/disable selling for all 6 windows at once
 
 **Important Notes:**
@@ -46,6 +46,13 @@ The system includes convenient "All" entities that allow you to control all Time
 - When you change a value on any "All" entity, it automatically applies the same setting to all 6 Time of Use windows
 - These entities are particularly useful for automations where you want to control all Time of Use windows simultaneously
 - The "All" entities read their current state from the first Time of Use window (e.g., "Time of Use 1 SoC")
+
+### Undocumented Time of Use Modes (1P)
+The 1P Modbus protocol (since V116) defines extra bits whose behaviour Deye does not document:
+- **Time of Use N GM Mode / BU Mode / CH Mode**: bits 2, 3 and 4 of the per-slot registers 274-279
+- **Time of Use Mode 3 (Spain)**: bit 8 of register 248, described as "work mode 3 (Spanish customer requirement)"
+
+They were added in the same protocol revision, so the GM/BU/CH modes probably belong to that Spain-specific work mode. The inverter stores the bits (the switches read back as enabled), but on EU firmware there is no matching setting on the inverter screen and no observed effect. Leave these switches **off** unless you know what your firmware does with them.
 
 ## 🔒 Safety Features
 
