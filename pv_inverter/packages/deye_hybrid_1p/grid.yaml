@@ -25,6 +25,9 @@ globals:
   - id: last_update_time
     type: unsigned long
     restore_value: yes
+  - id: gen_grid_signal_raw
+    type: int32_t
+    initial_value: "-1"
 
 sensor:
   # Register 54 = "AC power ratio". Per the V119 protocol, the AC power registers
@@ -325,6 +328,23 @@ select:
       "Grid": 1
       "Generator": 2
       "Both": 3
+    # Register 242 (Gen_Grid_Signal): bit0 = grid signal, bit1 = generator
+    # signal. The upper bits carry other data on some inverters (e.g. 0x5F01),
+    # so only bits0-1 are mapped and the rest are preserved on write.
+    lambda: |-
+      id(gen_grid_signal_raw) = x;
+      switch (x & 0x0003) {
+        case 1: return std::string("Grid");
+        case 2: return std::string("Generator");
+        case 3: return std::string("Both");
+        default: return std::string("Normal");
+      }
+    write_lambda: |-
+      if (id(gen_grid_signal_raw) < 0) {
+        ESP_LOGW("charging_signal", "Register 242 not read yet - write skipped");
+        return {};
+      }
+      return (id(gen_grid_signal_raw) & ~0x0003) | (value & 0x0003);
 
 switch:
   - platform: modbus_controller

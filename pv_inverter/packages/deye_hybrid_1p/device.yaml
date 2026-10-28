@@ -11,6 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+globals:
+  - id: meter_ct_raw
+    type: int32_t
+    initial_value: "-1"
+
 sensor:
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
@@ -383,4 +388,16 @@ select:
     optionsmap:
       "Disable": 0
       "Enable": 1
-      "Generator": 13
+    # Register 326 (Ex_MeterCT) is a bitfield per the V119 protocol: bit0 =
+    # meter enable, bits1-3 = phase A/B/C, bits6-7 = direction, bits8-11 = meter
+    # type, bits12-15 = meter 2. Only bit0 is mapped here; the raw value is kept
+    # so writes preserve the other bits.
+    lambda: |-
+      id(meter_ct_raw) = x;
+      return (x & 0x0001) ? std::string("Enable") : std::string("Disable");
+    write_lambda: |-
+      if (id(meter_ct_raw) < 0) {
+        ESP_LOGW("meter", "Register 326 not read yet - write skipped");
+        return {};
+      }
+      return (id(meter_ct_raw) & ~0x0001) | (value & 0x0001);
