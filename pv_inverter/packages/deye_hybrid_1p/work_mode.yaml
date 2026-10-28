@@ -48,15 +48,25 @@ switch:
     icon: "mdi:transmission-tower"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(reg_work_mode_280_raw).state & 0x0001) != 0;"
+    lambda: |-
+      if (isnan(id(reg_work_mode_280_raw).state)) return {};
+      return ((int)id(reg_work_mode_280_raw).state & 0x0001) != 0;
     turn_on_action:
-      - number.set:
-          id: reg_work_mode_280_raw
-          value: !lambda "return ((int)id(reg_work_mode_280_raw).state) | 0x0001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(reg_work_mode_280_raw).state);"
+          then:
+            - number.set:
+                id: reg_work_mode_280_raw
+                value: !lambda "return ((int)id(reg_work_mode_280_raw).state) | 0x0001;"
     turn_off_action:
-      - number.set:
-          id: reg_work_mode_280_raw
-          value: !lambda "return ((int)id(reg_work_mode_280_raw).state) & ~0x0001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(reg_work_mode_280_raw).state);"
+          then:
+            - number.set:
+                id: reg_work_mode_280_raw
+                value: !lambda "return ((int)id(reg_work_mode_280_raw).state) & ~0x0001;"
 
   - platform: template
     name: "Generator Peak Shaving Enable"
@@ -64,15 +74,25 @@ switch:
     icon: "mdi:transmission-tower"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(reg_work_mode_280_raw).state & 0x0010) != 0;"
+    lambda: |-
+      if (isnan(id(reg_work_mode_280_raw).state)) return {};
+      return ((int)id(reg_work_mode_280_raw).state & 0x0010) != 0;
     turn_on_action:
-      - number.set:
-          id: reg_work_mode_280_raw
-          value: !lambda "return ((int)id(reg_work_mode_280_raw).state) | 0x0010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(reg_work_mode_280_raw).state);"
+          then:
+            - number.set:
+                id: reg_work_mode_280_raw
+                value: !lambda "return ((int)id(reg_work_mode_280_raw).state) | 0x0010;"
     turn_off_action:
-      - number.set:
-          id: reg_work_mode_280_raw
-          value: !lambda "return ((int)id(reg_work_mode_280_raw).state) & ~0x0010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(reg_work_mode_280_raw).state);"
+          then:
+            - number.set:
+                id: reg_work_mode_280_raw
+                value: !lambda "return ((int)id(reg_work_mode_280_raw).state) & ~0x0010;"
 
   - platform: template
     name: "Grid Peak Shaving Enable"
@@ -80,15 +100,25 @@ switch:
     icon: "mdi:transmission-tower"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(reg_work_mode_280_raw).state & 0x0100) != 0;"
+    lambda: |-
+      if (isnan(id(reg_work_mode_280_raw).state)) return {};
+      return ((int)id(reg_work_mode_280_raw).state & 0x0100) != 0;
     turn_on_action:
-      - number.set:
-          id: reg_work_mode_280_raw
-          value: !lambda "return ((int)id(reg_work_mode_280_raw).state) | 0x0100;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(reg_work_mode_280_raw).state);"
+          then:
+            - number.set:
+                id: reg_work_mode_280_raw
+                value: !lambda "return ((int)id(reg_work_mode_280_raw).state) | 0x0100;"
     turn_off_action:
-      - number.set:
-          id: reg_work_mode_280_raw
-          value: !lambda "return ((int)id(reg_work_mode_280_raw).state) & ~0x0100;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(reg_work_mode_280_raw).state);"
+          then:
+            - number.set:
+                id: reg_work_mode_280_raw
+                value: !lambda "return ((int)id(reg_work_mode_280_raw).state) & ~0x0100;"
 
   - platform: template
     name: "Generator On-Grid"
@@ -96,15 +126,25 @@ switch:
     icon: "mdi:generator-stationary"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(reg_work_mode_280_raw).state & 0x1000) != 0;"
+    lambda: |-
+      if (isnan(id(reg_work_mode_280_raw).state)) return {};
+      return ((int)id(reg_work_mode_280_raw).state & 0x1000) != 0;
     turn_on_action:
-      - number.set:
-          id: reg_work_mode_280_raw
-          value: !lambda "return ((int)id(reg_work_mode_280_raw).state) | 0x1000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(reg_work_mode_280_raw).state);"
+          then:
+            - number.set:
+                id: reg_work_mode_280_raw
+                value: !lambda "return ((int)id(reg_work_mode_280_raw).state) | 0x1000;"
     turn_off_action:
-      - number.set:
-          id: reg_work_mode_280_raw
-          value: !lambda "return ((int)id(reg_work_mode_280_raw).state) & ~0x1000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(reg_work_mode_280_raw).state);"
+          then:
+            - number.set:
+                id: reg_work_mode_280_raw
+                value: !lambda "return ((int)id(reg_work_mode_280_raw).state) & ~0x1000;"
 
 number:
   - platform: modbus_controller

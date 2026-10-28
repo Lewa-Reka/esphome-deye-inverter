@@ -95,6 +95,11 @@ switch:
     bitmask: 1
     icon: "mdi:toggle-switch"
 
+  # --- Time of Use Slot Controls (Registers 274..279) ---
+  # Sell Mode corresponds to the undocumented bit 6 (0x40) of per-slot control registers 274-279.
+  # It is not documented in the V119 protocol, but enables battery discharge to grid down to the slot SoC.
+  # Note: Grid Charge (bit 0), Gen Charge (bit 1), and Sell Mode (bit 6) can be active simultaneously.
+
   # --- Time of Use Slot 1 Controls (Register 274) ---
   - platform: template
     name: "Time of Use 1 Charge Enable"
@@ -102,15 +107,25 @@ switch:
     icon: "mdi:battery-plus"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_1_raw).state & 0b00000001) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_1_raw).state)) return {};
+      return ((int)id(time_of_use_1_raw).state & 0b00000001) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_1_raw
-          value: !lambda "return (int)id(time_of_use_1_raw).state | 0b00000001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_1_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_1_raw
+                value: !lambda "return (int)id(time_of_use_1_raw).state | 0b00000001;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_1_raw
-          value: !lambda "return (int)id(time_of_use_1_raw).state & ~0b00000001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_1_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_1_raw
+                value: !lambda "return (int)id(time_of_use_1_raw).state & ~0b00000001;"
 
   - platform: template
     name: "Time of Use 1 Gen Charge"
@@ -118,15 +133,25 @@ switch:
     icon: "mdi:generator-stationary"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_1_raw).state & 0b00000010) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_1_raw).state)) return {};
+      return ((int)id(time_of_use_1_raw).state & 0b00000010) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_1_raw
-          value: !lambda "return (int)id(time_of_use_1_raw).state | 0b00000010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_1_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_1_raw
+                value: !lambda "return (int)id(time_of_use_1_raw).state | 0b00000010;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_1_raw
-          value: !lambda "return (int)id(time_of_use_1_raw).state & ~0b00000010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_1_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_1_raw
+                value: !lambda "return (int)id(time_of_use_1_raw).state & ~0b00000010;"
 
   - platform: template
     name: "Time of Use 1 Sell Mode"
@@ -134,15 +159,25 @@ switch:
     icon: "mdi:transmission-tower-export"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_1_raw).state & 0b01000000) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_1_raw).state)) return {};
+      return ((int)id(time_of_use_1_raw).state & 0b01000000) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_1_raw
-          value: !lambda "return (int)id(time_of_use_1_raw).state | 0b01000000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_1_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_1_raw
+                value: !lambda "return (int)id(time_of_use_1_raw).state | 0b01000000;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_1_raw
-          value: !lambda "return (int)id(time_of_use_1_raw).state & ~0b01000000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_1_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_1_raw
+                value: !lambda "return (int)id(time_of_use_1_raw).state & ~0b01000000;"
 
   # --- Time of Use Slot 2 Controls (Register 275) ---
   - platform: template
@@ -151,15 +186,25 @@ switch:
     icon: "mdi:battery-plus"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_2_raw).state & 0b00000001) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_2_raw).state)) return {};
+      return ((int)id(time_of_use_2_raw).state & 0b00000001) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_2_raw
-          value: !lambda "return (int)id(time_of_use_2_raw).state | 0b00000001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_2_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_2_raw
+                value: !lambda "return (int)id(time_of_use_2_raw).state | 0b00000001;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_2_raw
-          value: !lambda "return (int)id(time_of_use_2_raw).state & ~0b00000001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_2_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_2_raw
+                value: !lambda "return (int)id(time_of_use_2_raw).state & ~0b00000001;"
 
   - platform: template
     name: "Time of Use 2 Gen Charge"
@@ -167,15 +212,25 @@ switch:
     icon: "mdi:generator-stationary"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_2_raw).state & 0b00000010) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_2_raw).state)) return {};
+      return ((int)id(time_of_use_2_raw).state & 0b00000010) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_2_raw
-          value: !lambda "return (int)id(time_of_use_2_raw).state | 0b00000010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_2_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_2_raw
+                value: !lambda "return (int)id(time_of_use_2_raw).state | 0b00000010;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_2_raw
-          value: !lambda "return (int)id(time_of_use_2_raw).state & ~0b00000010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_2_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_2_raw
+                value: !lambda "return (int)id(time_of_use_2_raw).state & ~0b00000010;"
 
   - platform: template
     name: "Time of Use 2 Sell Mode"
@@ -183,15 +238,25 @@ switch:
     icon: "mdi:transmission-tower-export"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_2_raw).state & 0b01000000) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_2_raw).state)) return {};
+      return ((int)id(time_of_use_2_raw).state & 0b01000000) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_2_raw
-          value: !lambda "return (int)id(time_of_use_2_raw).state | 0b01000000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_2_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_2_raw
+                value: !lambda "return (int)id(time_of_use_2_raw).state | 0b01000000;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_2_raw
-          value: !lambda "return (int)id(time_of_use_2_raw).state & ~0b01000000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_2_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_2_raw
+                value: !lambda "return (int)id(time_of_use_2_raw).state & ~0b01000000;"
 
   # --- Time of Use Slot 3 Controls (Register 276) ---
   - platform: template
@@ -200,15 +265,25 @@ switch:
     icon: "mdi:battery-plus"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_3_raw).state & 0b00000001) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_3_raw).state)) return {};
+      return ((int)id(time_of_use_3_raw).state & 0b00000001) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_3_raw
-          value: !lambda "return (int)id(time_of_use_3_raw).state | 0b00000001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_3_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_3_raw
+                value: !lambda "return (int)id(time_of_use_3_raw).state | 0b00000001;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_3_raw
-          value: !lambda "return (int)id(time_of_use_3_raw).state & ~0b00000001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_3_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_3_raw
+                value: !lambda "return (int)id(time_of_use_3_raw).state & ~0b00000001;"
 
   - platform: template
     name: "Time of Use 3 Gen Charge"
@@ -216,15 +291,25 @@ switch:
     icon: "mdi:generator-stationary"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_3_raw).state & 0b00000010) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_3_raw).state)) return {};
+      return ((int)id(time_of_use_3_raw).state & 0b00000010) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_3_raw
-          value: !lambda "return (int)id(time_of_use_3_raw).state | 0b00000010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_3_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_3_raw
+                value: !lambda "return (int)id(time_of_use_3_raw).state | 0b00000010;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_3_raw
-          value: !lambda "return (int)id(time_of_use_3_raw).state & ~0b00000010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_3_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_3_raw
+                value: !lambda "return (int)id(time_of_use_3_raw).state & ~0b00000010;"
 
   - platform: template
     name: "Time of Use 3 Sell Mode"
@@ -232,15 +317,25 @@ switch:
     icon: "mdi:transmission-tower-export"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_3_raw).state & 0b01000000) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_3_raw).state)) return {};
+      return ((int)id(time_of_use_3_raw).state & 0b01000000) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_3_raw
-          value: !lambda "return (int)id(time_of_use_3_raw).state | 0b01000000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_3_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_3_raw
+                value: !lambda "return (int)id(time_of_use_3_raw).state | 0b01000000;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_3_raw
-          value: !lambda "return (int)id(time_of_use_3_raw).state & ~0b01000000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_3_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_3_raw
+                value: !lambda "return (int)id(time_of_use_3_raw).state & ~0b01000000;"
 
   # --- Time of Use Slot 4 Controls (Register 277) ---
   - platform: template
@@ -249,15 +344,25 @@ switch:
     icon: "mdi:battery-plus"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_4_raw).state & 0b00000001) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_4_raw).state)) return {};
+      return ((int)id(time_of_use_4_raw).state & 0b00000001) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_4_raw
-          value: !lambda "return (int)id(time_of_use_4_raw).state | 0b00000001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_4_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_4_raw
+                value: !lambda "return (int)id(time_of_use_4_raw).state | 0b00000001;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_4_raw
-          value: !lambda "return (int)id(time_of_use_4_raw).state & ~0b00000001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_4_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_4_raw
+                value: !lambda "return (int)id(time_of_use_4_raw).state & ~0b00000001;"
 
   - platform: template
     name: "Time of Use 4 Gen Charge"
@@ -265,15 +370,25 @@ switch:
     icon: "mdi:generator-stationary"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_4_raw).state & 0b00000010) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_4_raw).state)) return {};
+      return ((int)id(time_of_use_4_raw).state & 0b00000010) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_4_raw
-          value: !lambda "return (int)id(time_of_use_4_raw).state | 0b00000010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_4_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_4_raw
+                value: !lambda "return (int)id(time_of_use_4_raw).state | 0b00000010;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_4_raw
-          value: !lambda "return (int)id(time_of_use_4_raw).state & ~0b00000010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_4_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_4_raw
+                value: !lambda "return (int)id(time_of_use_4_raw).state & ~0b00000010;"
 
   - platform: template
     name: "Time of Use 4 Sell Mode"
@@ -281,15 +396,25 @@ switch:
     icon: "mdi:transmission-tower-export"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_4_raw).state & 0b01000000) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_4_raw).state)) return {};
+      return ((int)id(time_of_use_4_raw).state & 0b01000000) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_4_raw
-          value: !lambda "return (int)id(time_of_use_4_raw).state | 0b01000000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_4_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_4_raw
+                value: !lambda "return (int)id(time_of_use_4_raw).state | 0b01000000;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_4_raw
-          value: !lambda "return (int)id(time_of_use_4_raw).state & ~0b01000000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_4_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_4_raw
+                value: !lambda "return (int)id(time_of_use_4_raw).state & ~0b01000000;"
 
   # --- Time of Use Slot 5 Controls (Register 278) ---
   - platform: template
@@ -298,15 +423,25 @@ switch:
     icon: "mdi:battery-plus"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_5_raw).state & 0b00000001) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_5_raw).state)) return {};
+      return ((int)id(time_of_use_5_raw).state & 0b00000001) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_5_raw
-          value: !lambda "return (int)id(time_of_use_5_raw).state | 0b00000001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_5_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_5_raw
+                value: !lambda "return (int)id(time_of_use_5_raw).state | 0b00000001;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_5_raw
-          value: !lambda "return (int)id(time_of_use_5_raw).state & ~0b00000001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_5_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_5_raw
+                value: !lambda "return (int)id(time_of_use_5_raw).state & ~0b00000001;"
 
   - platform: template
     name: "Time of Use 5 Gen Charge"
@@ -314,15 +449,25 @@ switch:
     icon: "mdi:generator-stationary"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_5_raw).state & 0b00000010) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_5_raw).state)) return {};
+      return ((int)id(time_of_use_5_raw).state & 0b00000010) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_5_raw
-          value: !lambda "return (int)id(time_of_use_5_raw).state | 0b00000010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_5_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_5_raw
+                value: !lambda "return (int)id(time_of_use_5_raw).state | 0b00000010;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_5_raw
-          value: !lambda "return (int)id(time_of_use_5_raw).state & ~0b00000010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_5_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_5_raw
+                value: !lambda "return (int)id(time_of_use_5_raw).state & ~0b00000010;"
 
   - platform: template
     name: "Time of Use 5 Sell Mode"
@@ -330,15 +475,25 @@ switch:
     icon: "mdi:transmission-tower-export"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_5_raw).state & 0b01000000) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_5_raw).state)) return {};
+      return ((int)id(time_of_use_5_raw).state & 0b01000000) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_5_raw
-          value: !lambda "return (int)id(time_of_use_5_raw).state | 0b01000000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_5_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_5_raw
+                value: !lambda "return (int)id(time_of_use_5_raw).state | 0b01000000;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_5_raw
-          value: !lambda "return (int)id(time_of_use_5_raw).state & ~0b01000000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_5_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_5_raw
+                value: !lambda "return (int)id(time_of_use_5_raw).state & ~0b01000000;"
 
   # --- Time of Use Slot 6 Controls (Register 279) ---
   - platform: template
@@ -347,15 +502,25 @@ switch:
     icon: "mdi:battery-plus"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_6_raw).state & 0b00000001) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_6_raw).state)) return {};
+      return ((int)id(time_of_use_6_raw).state & 0b00000001) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_6_raw
-          value: !lambda "return (int)id(time_of_use_6_raw).state | 0b00000001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_6_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_6_raw
+                value: !lambda "return (int)id(time_of_use_6_raw).state | 0b00000001;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_6_raw
-          value: !lambda "return (int)id(time_of_use_6_raw).state & ~0b00000001;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_6_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_6_raw
+                value: !lambda "return (int)id(time_of_use_6_raw).state & ~0b00000001;"
 
   - platform: template
     name: "Time of Use 6 Gen Charge"
@@ -363,15 +528,25 @@ switch:
     icon: "mdi:generator-stationary"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_6_raw).state & 0b00000010) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_6_raw).state)) return {};
+      return ((int)id(time_of_use_6_raw).state & 0b00000010) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_6_raw
-          value: !lambda "return (int)id(time_of_use_6_raw).state | 0b00000010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_6_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_6_raw
+                value: !lambda "return (int)id(time_of_use_6_raw).state | 0b00000010;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_6_raw
-          value: !lambda "return (int)id(time_of_use_6_raw).state & ~0b00000010;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_6_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_6_raw
+                value: !lambda "return (int)id(time_of_use_6_raw).state & ~0b00000010;"
 
   - platform: template
     name: "Time of Use 6 Sell Mode"
@@ -379,15 +554,25 @@ switch:
     icon: "mdi:transmission-tower-export"
     optimistic: true
     restore_mode: DISABLED
-    lambda: "return ((int)id(time_of_use_6_raw).state & 0b01000000) != 0;"
+    lambda: |-
+      if (isnan(id(time_of_use_6_raw).state)) return {};
+      return ((int)id(time_of_use_6_raw).state & 0b01000000) != 0;
     turn_on_action:
-      - number.set:
-          id: time_of_use_6_raw
-          value: !lambda "return (int)id(time_of_use_6_raw).state | 0b01000000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_6_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_6_raw
+                value: !lambda "return (int)id(time_of_use_6_raw).state | 0b01000000;"
     turn_off_action:
-      - number.set:
-          id: time_of_use_6_raw
-          value: !lambda "return (int)id(time_of_use_6_raw).state & ~0b01000000;"
+      - if:
+          condition:
+            lambda: "return !isnan(id(time_of_use_6_raw).state);"
+          then:
+            - number.set:
+                id: time_of_use_6_raw
+                value: !lambda "return (int)id(time_of_use_6_raw).state & ~0b01000000;"
 
   - platform: template
     name: "Time of Use All Charge Enable"
@@ -765,6 +950,7 @@ number:
     icon: "mdi:battery-clock"
     lambda: "return (int)x & 0x00FF;"
     write_lambda: |-
+      if (isnan(id(time_of_use_1_gen_soc).state)) return {};
       uint16_t gen = (uint16_t)id(time_of_use_1_gen_soc).state;
       return (gen << 8) | ((uint8_t)x);
 
@@ -783,6 +969,7 @@ number:
     icon: "mdi:generator-stationary"
     lambda: "return ((int)x >> 8) & 0x00FF;"
     write_lambda: |-
+      if (isnan(id(time_of_use_1_soc).state)) return {};
       uint16_t batt = (uint16_t)id(time_of_use_1_soc).state;
       return (((uint8_t)x) << 8) | (batt & 0x00FF);
 
@@ -801,6 +988,7 @@ number:
     icon: "mdi:battery-clock"
     lambda: "return (int)x & 0x00FF;"
     write_lambda: |-
+      if (isnan(id(time_of_use_2_gen_soc).state)) return {};
       uint16_t gen = (uint16_t)id(time_of_use_2_gen_soc).state;
       return (gen << 8) | ((uint8_t)x);
 
@@ -819,6 +1007,7 @@ number:
     icon: "mdi:generator-stationary"
     lambda: "return ((int)x >> 8) & 0x00FF;"
     write_lambda: |-
+      if (isnan(id(time_of_use_2_soc).state)) return {};
       uint16_t batt = (uint16_t)id(time_of_use_2_soc).state;
       return (((uint8_t)x) << 8) | (batt & 0x00FF);
 
@@ -837,6 +1026,7 @@ number:
     icon: "mdi:battery-clock"
     lambda: "return (int)x & 0x00FF;"
     write_lambda: |-
+      if (isnan(id(time_of_use_3_gen_soc).state)) return {};
       uint16_t gen = (uint16_t)id(time_of_use_3_gen_soc).state;
       return (gen << 8) | ((uint8_t)x);
 
@@ -855,6 +1045,7 @@ number:
     icon: "mdi:generator-stationary"
     lambda: "return ((int)x >> 8) & 0x00FF;"
     write_lambda: |-
+      if (isnan(id(time_of_use_3_soc).state)) return {};
       uint16_t batt = (uint16_t)id(time_of_use_3_soc).state;
       return (((uint8_t)x) << 8) | (batt & 0x00FF);
 
@@ -873,6 +1064,7 @@ number:
     icon: "mdi:battery-clock"
     lambda: "return (int)x & 0x00FF;"
     write_lambda: |-
+      if (isnan(id(time_of_use_4_gen_soc).state)) return {};
       uint16_t gen = (uint16_t)id(time_of_use_4_gen_soc).state;
       return (gen << 8) | ((uint8_t)x);
 
@@ -891,6 +1083,7 @@ number:
     icon: "mdi:generator-stationary"
     lambda: "return ((int)x >> 8) & 0x00FF;"
     write_lambda: |-
+      if (isnan(id(time_of_use_4_soc).state)) return {};
       uint16_t batt = (uint16_t)id(time_of_use_4_soc).state;
       return (((uint8_t)x) << 8) | (batt & 0x00FF);
 
@@ -909,6 +1102,7 @@ number:
     icon: "mdi:battery-clock"
     lambda: "return (int)x & 0x00FF;"
     write_lambda: |-
+      if (isnan(id(time_of_use_5_gen_soc).state)) return {};
       uint16_t gen = (uint16_t)id(time_of_use_5_gen_soc).state;
       return (gen << 8) | ((uint8_t)x);
 
@@ -927,6 +1121,7 @@ number:
     icon: "mdi:generator-stationary"
     lambda: "return ((int)x >> 8) & 0x00FF;"
     write_lambda: |-
+      if (isnan(id(time_of_use_5_soc).state)) return {};
       uint16_t batt = (uint16_t)id(time_of_use_5_soc).state;
       return (((uint8_t)x) << 8) | (batt & 0x00FF);
 
@@ -945,6 +1140,7 @@ number:
     icon: "mdi:battery-clock"
     lambda: "return (int)x & 0x00FF;"
     write_lambda: |-
+      if (isnan(id(time_of_use_6_gen_soc).state)) return {};
       uint16_t gen = (uint16_t)id(time_of_use_6_gen_soc).state;
       return (gen << 8) | ((uint8_t)x);
 
@@ -963,6 +1159,7 @@ number:
     icon: "mdi:generator-stationary"
     lambda: "return ((int)x >> 8) & 0x00FF;"
     write_lambda: |-
+      if (isnan(id(time_of_use_6_soc).state)) return {};
       uint16_t batt = (uint16_t)id(time_of_use_6_soc).state;
       return (((uint8_t)x) << 8) | (batt & 0x00FF);
 
