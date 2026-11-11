@@ -347,24 +347,36 @@ select:
       return (id(gen_grid_signal_raw) & ~0x0003) | (value & 0x0003);
 
 switch:
+  # Force off-grid operation bit (强制离网运行位).
+  # Per Deye 1P Modbus RTU V119 protocol (p. 31), "Force off-grid operation bit" is at holding
+  # register 416 (R/W, 0: invalid/normal, 1: force off-grid).
+  # Previously set to address 281 via a +102 offset from 3P register 179 (179 + 102 = 281);
+  # however, on 1P inverters, register 281 is "External CT sensor auto-detect direction enable"
+  # (外置传感器自动检测方向使能, V119 p. 26).
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Force Off Grid"
     id: switch_off_grid
     register_type: holding
-    address: 281
+    address: 416
     bitmask: 1
     entity_category: config
     icon: "mdi:transmission-tower-off"
 
+  # Generator connected to grid input terminal (发电机连接到电网输入端).
+  # Per Deye 1P Modbus RTU V119 protocol (p. 27), this setting is a dedicated R/W flag at holding
+  # register 291 (0: disable, 1: enabled), corresponding to 3P register 189 (+102 offset = 291).
+  # Previously set to address 280 with bitmask: 12 (decimal 12 = 0x000C = bits 2-3 "Inverter output
+  # voltage"), which directly overwrote register 280 and corrupted Peak Shaving, Microinverter
+  # Export Cut-Off, and Generator On-Grid bitfields managed in work_mode.yaml.
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Generator Grid Side"
     register_type: holding
-    address: 280
-    bitmask: 12
+    address: 291
+    bitmask: 1
     entity_category: config
     icon: "mdi:generator-stationary"
 

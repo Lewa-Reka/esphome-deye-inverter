@@ -113,6 +113,9 @@ sensor:
     value_type: U_WORD
     icon: "mdi:battery"
 
+  # Battery output power (holding register 190, signed 16-bit: positive = discharge, negative = charge).
+  # Note: Although V119 protocol (p. 9, register 54 note) mentions register 190 alongside AC power
+  # registers, hardware verification (#127) confirmed that register 190 is always reported in 1 W/LSB.
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Battery Power"
@@ -126,6 +129,11 @@ sensor:
     value_type: S_WORD
     icon: "mdi:lightning-bolt"
 
+  # Battery output current (holding register 191, signed 16-bit: positive = discharge, negative = charge).
+  # Per Deye 1P Modbus RTU V119 protocol (p. 21), register 191 has a resolution of 0.01 A/LSB on
+  # standard 1P inverters (where register 54 "AC power ratio" != 10), and 0.1 A/LSB on >=10kW models
+  # (such as SUN-10K-SG02LP1 where register 54 == 10, see #127). PR #128 hardcoded multiply: 0.1 for
+  # all 1P models, causing Battery Current to read 10x higher than BMS current on standard models.
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
     name: "Battery Current"
@@ -135,7 +143,7 @@ sensor:
     device_class: current
     accuracy_decimals: 2
     filters:
-      - multiply: 0.1
+      - lambda: "return (id(ac_power_ratio).state == 10.0f) ? x * 0.1f : x * 0.01f;"
     value_type: S_WORD
     icon: "mdi:current-dc"
 

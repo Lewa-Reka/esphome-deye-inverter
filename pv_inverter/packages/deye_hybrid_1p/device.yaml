@@ -79,9 +79,10 @@ sensor:
           uint16_t value = (uint16_t)x;
           // Extract lower nibble (bits 0-3)
           uint16_t phases = value & 0x0F;
-          // Validation: if value exceeds 3 phases, use default of 3
+          // Validation: if value is out of range (1..3), default to 1 phase for 1P inverter
+          // (previously defaulted to 3.0 due to copy-paste from the 3P configuration)
           if (phases < 1 || phases > 3) {
-            return 3.0;
+            return 1.0;
           }
           return (float)phases;
 
@@ -361,13 +362,19 @@ text_sensor:
       return std::string("Error");
 
 number:
+  # Self-check time (power-on self-test duration).
+  # Per Deye 1P Modbus RTU V119 protocol (p. 6), "Self-check time" (开机自检时间) is at holding
+  # register 21 (R/W, range [0, 1000] s, 1 s/bit).
+  # Previously set to address 61 (copied directly from the 3P config without applying the -40
+  # offset for the first variable attribute block: 3P 60..64 -> 1P 20..24); on 1P inverters,
+  # register 61 is a read-only real-time sensor ("DayReactive PowerWh", V119 p. 10).
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
     name: "Self Check Time"
     id: self_check_time
     register_type: holding
-    address: 61
+    address: 21
     unit_of_measurement: "s"
     min_value: 0
     max_value: 1000

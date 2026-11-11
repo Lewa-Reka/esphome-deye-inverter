@@ -156,15 +156,26 @@ sensor:
       - multiply: 0.1
     icon: "mdi:home-lightning-bolt"
 
+  # Instantaneous inverter power losses (self-consumption + AC/DC conversion losses).
+  # Uses `state_class: "measurement"` (required by Home Assistant for `device_class: power` in W)
+  # and includes PV3, PV4, and Generator inputs to match the 3P power balance formula.
   - platform: template
     name: "Power Losses" # Includes consumption of the inverter device itself as well AC/DC conversion losses
     id: power_losses
     unit_of_measurement: "W"
     device_class: power
-    state_class: total_increasing
+    state_class: "measurement"
     accuracy_decimals: 1
     lambda: |-
-      return (id(pv1_power).state + id(pv2_power).state + id(battery_power).state - id(output_power).state);
+      return (
+        id(pv1_power).state +
+        id(pv2_power).state +
+        id(pv3_power).state +
+        id(pv4_power).state +
+        id(battery_power).state +
+        id(generator_power_total).state -
+        id(output_power).state
+      );
     icon: "mdi:home-lightning-bolt"
 
   - platform: template
