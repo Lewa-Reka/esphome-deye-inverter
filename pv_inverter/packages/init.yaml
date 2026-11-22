@@ -22,10 +22,11 @@ esphome:
   min_version: "2026.9.0"
   project:
     name: "lewa-reka.deye-inverter"
-    version: "0.15.0-rc"
+    version: "0.15.1"
   devices:
     - id: esp_board
       name: ${friendly_name} ESP Board
+      relation: child
 
 logger:
   level: WARN
