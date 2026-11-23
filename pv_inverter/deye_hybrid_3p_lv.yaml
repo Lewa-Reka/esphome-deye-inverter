@@ -39,6 +39,7 @@ packages:
   pv: !include packages/deye_hybrid_3p/pv.yaml
   tou: !include packages/deye_hybrid_3p/tou.yaml
   time_sync: !include packages/deye_hybrid_3p/time_sync.yaml
+  remote: !include packages/deye_hybrid_3p/remote.yaml
 
 script:
   - id: set_safe_modbus_registers
