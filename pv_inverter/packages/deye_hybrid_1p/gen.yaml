@@ -27,20 +27,44 @@ sensor:
     value_type: U_WORD
     icon: "mdi:generator-portable"
 
+  # Total generator energy is stored across two NON-CONTIGUOUS 16-bit registers on 1P inverters.
+  # Per Deye 1P Modbus RTU V119 protocol (p. 1 V117 changelog & p. 13):
+  #   - Register 92: Total_Gen_powerWhL (Low word, 0.1 kWh/LSB)
+  #   - Register 95: Total_Gen_powerWhH (High word, 0.1 kWh/LSB)
+  # Registers 93 (Power Factor / Phase Error flags) and 94 (SD Card Status) sit between them.
+  # Previously, reading address 92 with value_type: U_DWORD_R treated register 93 as the upper
+  # 16 bits, corrupting both "Total Generator Production" and "Total Losses" whenever register 93 != 0.
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
+    id: total_generator_production_low_bytes
+    address: 92
+    register_type: holding
+    value_type: U_WORD
+    internal: true
+
+  - platform: modbus_controller
+    modbus_controller_id: ${modbus_controller_id}
+    id: total_generator_production_high_bytes
+    address: 95
+    register_type: holding
+    value_type: U_WORD
+    internal: true
+
+  - platform: template
     name: "Total Generator Production"
     id: total_generator_production
-    register_type: holding
-    address: 92
     unit_of_measurement: "kWh"
     device_class: energy
     state_class: "total_increasing"
     accuracy_decimals: 1
-    value_type: U_DWORD_R
-    filters:
-      - multiply: 0.1
     icon: "mdi:generator-stationary"
+    lambda: |-
+      auto high = id(total_generator_production_high_bytes).state;
+      auto low = id(total_generator_production_low_bytes).state;
+      if (isnan(high) || isnan(low)) {
+        return {};
+      }
+      return (((uint32_t)high << 16) | (uint32_t)low) * 0.1f;
 
   - platform: modbus_controller
     modbus_controller_id: ${modbus_controller_id}
@@ -179,6 +203,10 @@ number:
     mode: box
     icon: "mdi:lightning-bolt-circle"
 
+  # Generator maximum operating time & cooling time (holding registers 223 and 224).
+  # Per Deye 1P Modbus RTU V119 protocol (p. 23), both registers use a scale factor of 0.1 hours
+  # ("120 is 12 hours", range [0, 240] -> 0..24 h), so multiply: 10 is required to convert
+  # between UI hours and raw register tenths-of-an-hour (matching the 3P configuration).
   - platform: modbus_controller
     use_write_multiple: true
     modbus_controller_id: ${modbus_controller_id}
@@ -188,6 +216,7 @@ number:
     device_class: duration
     entity_category: config
     register_type: holding
+    multiply: 10
     min_value: 0
     max_value: 24
     step: 1
@@ -205,6 +234,7 @@ number:
     device_class: duration
     entity_category: config
     register_type: holding
+    multiply: 10
     min_value: 0
     max_value: 24
     step: 1
